@@ -582,3 +582,18 @@ button:hover ~ .cursor {
   margin: 0.75rem 0 0.5rem;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
+@media (max-width: 768px) {
+  .project-card { 
+    max-width: 100%; 
+    margin: 0 auto 2rem; 
+  }
+  .timeline-content { 
+    padding: 1rem; 
+  }
+  h1 { 
+    font-size: 2rem; 
+  }
+}
+.timeline-content {
+  padding: 1.5rem;
+}
