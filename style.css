@@ -701,3 +701,131 @@ body::before {
     padding: 2rem 1.5rem;
   }
 }
+/* Japanese Zen Overlay - Dark Theme Optimized */
+.hero-tagline {
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.hero-subtitle {
+  font-size: 1.1rem; line-height: 1.6;
+}
+
+/* Sakura on existing .hero-particles */
+.hero-particles::before {
+  content: '🌸 🌸'; font-size: 1.8em; opacity: 0.5;
+  position: absolute; top: 30%; left: 15vw;
+  animation: sakuraFall 12s linear infinite;
+}
+
+.hero-particles::after {
+  content: '🌸'; font-size: 1.2em; opacity: 0.3;
+  position: absolute; top: 60%; right: 20vw;
+  animation: sakuraFall 18s linear infinite, sway 3s ease-in-out infinite;
+}
+/* Hamburger Menu */
+.hamburger {
+  display: none; background: none; border: none;
+  color: var(--text-secondary); font-size: 1.8rem;
+  padding: 0.5rem; cursor: pointer; border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.hamburger:hover { background: rgba(255,255,255,0.1); }
+
+/* Mobile */
+@media (max-width: 768px) {
+  .hamburger { display: block; margin-left: auto; margin-right: 1rem; }
+  
+  .nav-links {
+    position: fixed; top: 64px; left: 0; right: 0;
+    background: rgba(2,3,10,0.98); backdrop-filter: blur(20px);
+    flex-direction: column; padding: 2rem 1.5rem;
+    transform: translateY(-100%); transition: transform 0.4s ease;
+  }
+  
+  .nav-links.active { transform: translateY(0); }
+  
+  .theme-toggle { min-width: 50px; } /* Bigger touch target */
+}
+
+/* Fix timeline mobile */
+@media (max-width: 768px) {
+  .timeline-spine { left: 30px; }
+  .timeline-item { width: 100%; padding-left: 60px; margin-left: 0 !important; text-align: left !important; }
+  .timeline-dot { left: 20px !important; }
+}
+.hero-title {
+  filter: drop-shadow(0 0 20px var(--accent-cyan)) drop-shadow(0 0 40px var(--accent-purple));
+  animation: neonPulse 3s ease-in-out infinite alternate;
+}
+
+@keyframes neonPulse {
+  0% { filter: drop-shadow(0 0 20px var(--accent-cyan)); }
+  100% { filter: drop-shadow(0 0 30px var(--accent-purple)) drop-shadow(0 0 50px var(--accent-cyan)); }
+}
+/* V2: Glass Cards (Active Theory style) */
+.project-card {
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(25px);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.project-card:hover {
+  background: rgba(0,255,195,0.06);
+  border-color: rgba(0,255,195,0.4);
+  box-shadow: 
+    0 25px 60px rgba(0,0,0,0.6),
+    0 0 40px rgba(0,255,195,0.3);
+  transform: translateY(-12px);
+}
+/* V2: Active Theory Parallax Particles */
+.hero-particles {
+  animation: parallaxFloat 25s linear infinite;
+  filter: blur(1px);
+}
+
+@keyframes parallaxFloat {
+  0%, 100% { transform: translateY(0px) scale(1) rotate(0deg); }
+  33% { transform: translateY(-30px) scale(1.1) rotate(120deg); }
+  66% { transform: translateY(-15px) scale(1.05) rotate(240deg); }
+}
+
+.hero::before {
+  animation-duration: 15s; /* Faster glow pulse */
+}
+/* V2: Active Theory CTA Glow */
+.hero-btn {
+  box-shadow: 0 0 30px rgba(0,255,195,0.6);
+  transition: all 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+
+.hero-btn:hover {
+  box-shadow: 
+    0 0 50px rgba(122,92,255,0.8),
+    0 0 80px rgba(0,255,195,0.7);
+  transform: translateY(-8px) scale(1.05);
+  background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+  color: var(--bg-primary) !important;
+}
+.project-card {
+  background: rgba(255,255,255,0.03); backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.project-card:hover {
+  background: rgba(0,255,195,0.08); border-color: var(--accent-cyan);
+  box-shadow: 0 25px 50px rgba(0,0,0,0.5), var(--glow-cyan);
+}
+.hero-particles {
+  background: radial-gradient(circle, rgba(122,92,255,0.3) 0%, transparent 70%);
+  animation: parallaxFloat 20s linear infinite;
+}
+
+@keyframes parallaxFloat {
+  0% { transform: translateY(0px) rotate(0deg); }
+  25% { transform: translateY(-20px) rotate(90deg); }
+  50% { transform: translateY(-10px) rotate(180deg); }
+  75% { transform: translateY(-30px) rotate(270deg); }
+  100% { transform: translateY(0px) rotate(360deg); }
+}

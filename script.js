@@ -1,13 +1,10 @@
-// 🚀 Enhanced script.js - Clean & Simple (your style preserved)
-
-// Custom cursor
+// Custom cursor 
 const cursor = document.querySelector('.cursor');
 window.addEventListener('pointermove', (e) => {
   if (!cursor) return;
   cursor.style.left = `${e.clientX}px`;
   cursor.style.top = `${e.clientY}px`;
   
-  // Smooth cursor growth on interactive elements
   if (e.target.closest('a, button, .project-card')) {
     cursor.classList.add('hover');
   } else {
@@ -15,22 +12,22 @@ window.addEventListener('pointermove', (e) => {
   }
 });
 
-// Scroll-reveal (improved)
+// Scroll-reveal
 const revealElements = document.querySelectorAll('.reveal');
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
       entry.target.classList.add('revealed');
-      observer.unobserve(entry.target); // Performance
+      observer.unobserve(entry.target);
     }
   });
 }, {
   threshold: 0.15,
-  rootMargin: '0px 0px -50px 0px' // Trigger earlier
+  rootMargin: '0px 0px -50px 0px'
 });
 
 revealElements.forEach((el, index) => {
-  el.style.transitionDelay = `${Math.min(index * 0.1, 0.4)}s`; // Cap stagger
+  el.style.transitionDelay = `${Math.min(index * 0.1, 0.4)}s`;
   observer.observe(el);
 });
 
@@ -45,10 +42,9 @@ window.addEventListener('scroll', () => {
   }
 });
 
-// 🌙 Theme toggle (fixed + smooth)
+// 🌙 Theme toggle
 const themeBtn = document.getElementById('theme-btn');
 if (themeBtn) {
-  // Load theme
   const savedTheme = localStorage.getItem('theme') || 'dark';
   const body = document.body;
   
@@ -59,7 +55,6 @@ if (themeBtn) {
     themeBtn.textContent = '🌙';
   }
   
-  // Toggle
   themeBtn.addEventListener('click', () => {
     body.classList.toggle('light');
     const isLight = body.classList.contains('light');
@@ -68,7 +63,23 @@ if (themeBtn) {
   });
 }
 
-// 🔗 Smooth scroll for ALL anchor links
+// 🔥 NEW: MOBILE HAMBURGER MENU 
+const hamburger = document.querySelector('.hamburger');
+const navLinks = document.querySelector('.nav-links');
+if (hamburger && navLinks) {
+  hamburger.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+  });
+  
+  // Close menu when clicking links (mobile)
+  navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      navLinks.classList.remove('active');
+    });
+  });
+}
+
+// 🔗 Smooth scroll (cubic easing)
 document.querySelectorAll('a[href^="#"]').forEach(link => {
   link.addEventListener('click', (e) => {
     const href = link.getAttribute('href');
@@ -80,7 +91,6 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
   });
 });
 
-// Smooth scroll function (cubic easing)
 function smoothScrollTo(targetY, duration) {
   const startY = window.pageYOffset;
   const distance = targetY - startY;
@@ -91,7 +101,6 @@ function smoothScrollTo(targetY, duration) {
     const timeElapsed = currentTime - startTime;
     const progress = Math.min(timeElapsed / duration, 1);
     
-    // Smooth cubic easing
     const ease = 1 - Math.pow(1 - progress, 3);
     
     window.scrollTo(0, startY + distance * ease);
@@ -104,27 +113,7 @@ function smoothScrollTo(targetY, duration) {
   requestAnimationFrame(animation);
 }
 
-// 📊 Simple stats counter animation (optional - add if you want)
-function animateStats() {
-  const stats = document.querySelectorAll('.stats span strong');
-  stats.forEach(stat => {
-    const target = parseInt(stat.textContent);
-    let current = 0;
-    const increment = target / 50;
-    
-    const timer = setInterval(() => {
-      current += increment;
-      if (current >= target) {
-        stat.textContent = target;
-        clearInterval(timer);
-      } else {
-        stat.textContent = Math.floor(current);
-      }
-    }, 30);
-  });
-}
-
-// Active nav highlight
+// Active nav highlight 
 window.addEventListener('scroll', () => {
   const sections = document.querySelectorAll('section[id]');
   let current = '';
@@ -144,13 +133,42 @@ window.addEventListener('scroll', () => {
   });
 });
 
-// 🖥️ Performance: Stop cursor on mobile
+// 🖥️ Performance: Disable cursor on mobile 
 if (window.innerWidth > 768) {
-  document.addEventListener('DOMContentLoaded', () => {
-    // Preload images for smoother scroll
+  document.addEventListener('DOMContentLoaded', () => {<!-- FORCE FOOTER -->
+<div style="position:relative;z-index:100;padding:4rem 10vw 2rem;margin-top:4rem;border-top:1px solid rgba(255,255,255,0.15);text-align:center;">
+  <p style="color:#f5f5f5 !important;font-size:1.1rem;margin:0;font-weight:500;letter-spacing:0.03em;">
+    Made with ❤️ in <span style="color:#00ffc3;">Gurugram, India</span> | 
+    <a href="https://github.com/Alppoint/ActivePortfolioMain" target="_blank" style="color:#00ffc3 !important;text-decoration:none;font-weight:600;">
+      View Source →
+    </a>
+  </p>
+</div>
+
     const images = document.querySelectorAll('img');
     images.forEach(img => {
       img.setAttribute('loading', 'lazy');
     });
   });
+}
+.project-card {
+  background: rgba(255,255,255,0.03); backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.project-card:hover {
+  background: rgba(0,255,195,0.08); border-color: var(--accent-cyan);
+  box-shadow: 0 25px 50px rgba(0,0,0,0.5), var(--glow-cyan);
+}
+.hero-particles {
+  background: radial-gradient(circle, rgba(122,92,255,0.3) 0%, transparent 70%);
+  animation: parallaxFloat 20s linear infinite;
+}
+
+@keyframes parallaxFloat {
+  0% { transform: translateY(0px) rotate(0deg); }
+  25% { transform: translateY(-20px) rotate(90deg); }
+  50% { transform: translateY(-10px) rotate(180deg); }
+  75% { transform: translateY(-30px) rotate(270deg); }
+  100% { transform: translateY(0px) rotate(360deg); }
 }
