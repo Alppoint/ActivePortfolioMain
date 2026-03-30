@@ -1,276 +1,330 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Akshit Gaur – Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-  <header class="nav">
-  <div class="nav-logo">
-    <span class="nav-logo-glow">AKSHIT GAUR</span>
-  </div>
-  
-  <button class="hamburger" aria-label="Toggle Menu">☰</button>  <!-- NEW -->
-  
-  <div class="theme-toggle">
-    <button id="theme-btn" aria-label="Toggle theme">🌙</button>
+  <!-- PRELOADER -->
+  <div id="preloader" class="preloader">
+    <div class="preloader-counter" id="preloader-counter">00%</div>
   </div>
 
-  <nav class="nav-links">
-    <a href="#work">Work</a>
-    <a href="#about">About</a>
-    <a href="#contact">Contact</a>
-  </nav>
-</header>
-
+  <!-- NAV -->
+  <header class="nav" id="nav">
+    <div class="nav-logo">
+      <span class="nav-logo-glow">AG</span>
+    </div>
+    <nav class="nav-links" id="navLinks">
+      <a href="#work">Work</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="nav-right">
+      <button id="theme-btn" class="theme-btn" aria-label="Toggle theme">🌙</button>
+      <button class="hamburger" id="hamburger" aria-label="Toggle Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
 
   <main>
-<!-- HERO WITH JAPANESE TOUCH -->
-<section class="hero reveal" id="hero">
-  <div class="hero-bg-overlay"></div>
-  
-  <div class="hero-content">
-    <p class="hero-tagline">BCA · AI/ML · Web 開発</p>
-    <h1 class="hero-title">Akshit Gaur – Building cinematic web experiences</h1>
-    <p class="hero-subtitle">
-      First-year BCA student exploring C, AI/ML and creative front-end.<br>
-      日本を目指して – Turning ideas into interactive stories.
-    </p>
-    <a href="#work" class="hero-btn">See featured projects →</a>
-  </div>
-  
-  <div class="scroll-hint">...</div>
-  <div class="hero-particles"></div>
-  <div class="jap-accent">
-    <svg viewBox="0 0 100 60" class="fuji-silhouette" preserveAspectRatio="xMidYMid meet">
-      <path d="M0 60 Q25 30 50 55 Q75 25 100 60 Z" fill="#D2B48C" stroke="#FF4500" stroke-width="1.5"/>
-      <circle cx="80" cy="45" r="7" fill="#FF4500"/>
-    </svg>
-  </div>
-</section>
 
+    <!-- HERO -->
+    <section class="hero" id="hero">
+      <canvas class="hero-canvas" id="heroCanvas"></canvas>
+      <div class="hero-noise"></div>
 
-
-    <!-- FEATURED PROJECTS (timeline) -->
-    <section id="work" class="section projects timeline reveal">
-      <h2 class="section-title">Featured Projects</h2>
-      <p class="section-subtitle">A vertical spine of the work that defines me.</p>
-
-      <div class="timeline-spine"></div>
-
-      <!-- Study Tracker – LIVE PROJECT -->
-      <div class="timeline-item left reveal">
-        <div class="timeline-dot"></div>
-        <article class="project-card">
-          <h3 class="project-title">Study Tracker</h3>
-          <img src="study-tracker.png"
-               alt="Study Tracker app screenshot"
-               class="project-image">
-          <p class="project-meta">Tech: HTML · CSS · JavaScript · LocalStorage</p>
-          <p class="project-meta-line">Role: Solo · Status: Live</p>
-          <p class="project-desc">
-            Small web app that lets me record what I study each day and keep a simple history of sessions.
-          </p>
-          <p class="project-links">
-            <a href="https://alppoint.github.io/study-tracker/" target="_blank">Live demo</a> ·
-            <a href="https://github.com/Alppoint/study-tracker" target="_blank">Source code</a>
-          </p>
-        </article>
+      <div class="hero-content">
+        <p class="hero-eyebrow reveal-up" style="--d:0s">BCA · AI/ML · Web 開発</p>
+        <h1 class="hero-title">
+          <div class="title-mask"><span class="title-line">Akshit</span></div>
+          <div class="title-mask"><span class="title-line accent-line">Gaur.</span></div>
+        </h1>
+        <p class="hero-subtitle reveal-up" style="--d:0.3s">
+          First-year BCA student building cinematic web experiences.<br>
+          <span class="jp">日本を目指して</span> — Turning ideas into interactive stories.
+        </p>
+        <div class="hero-cta reveal-up" style="--d:0.45s">
+          <a href="#work" class="btn-primary roll-btn">
+            <span class="roll-text" data-text="See my work">See my work</span>
+            <span class="btn-arrow">↓</span>
+          </a>
+          <a href="#contact" class="btn-ghost roll-btn">
+            <span class="roll-text" data-text="Get in touch">Get in touch</span>
+          </a>
+        </div>
       </div>
 
-      <!-- JS & Web Lab – LIVE PROJECT -->
-      <div class="timeline-item right reveal">
-        <div class="timeline-dot"></div>
-        <article class="project-card">
-          <h3 class="project-title">JS & Web Lab Exercises</h3>
-          <img src="js-web-lab.png.png"
-          alt="JS & Web Lab exercises screenshot"
-          class="project-image">
-          <p class="project-meta">Tech: HTML · CSS · JavaScript · Bootstrap</p>
-          <p class="project-meta-line">Role: Solo · Status: Live</p>
-          <p class="project-desc">
-            Collection of Programs where I built arrays, strings, forms,
-            validation and Bootstrap components.
-          </p>
-          <p class="project-links">
-            <a href="https://alppoint.github.io/js-web-lab/" target="_blank">Live demo</a> ·
-            <a href="https://github.com/Alppoint/js-web-lab" target="_blank">Source code</a>
-          </p>
-        </article>
+      <div class="hero-scroll-hint">
+        <span class="scroll-label">SCROLL</span>
+        <div class="scroll-line-anim"></div>
       </div>
 
-      <!-- C Lab Programs – NEW PROJECT -->
-      <div class="timeline-item left reveal">
-        <div class="timeline-dot"></div>
-        <article class="project-card">
-          <h3 class="project-title">C Lab Programs</h3>
-          <img src="c-lab-programs.png"
-               alt="C Lab Programs repo screenshot"
-               class="project-image">
-          <p class="project-meta">Tech: C · VS Code · GCC · GitHub</p>
-          <p class="project-meta-line">Date: Dec 2025 · Role: Solo</p>
-          <p class="project-meta-line status">Status: Completed</p>
-          <p class="project-desc">
-            Collection of solved C Lang exercises covering input/output, conditionals, loops,
-            functions, arrays, strings, pointers, structures and file handling, all organized in a public
-            GitHub repository.
-          </p>
-          <p class="project-links">
-            <a href="https://github.com/Alppoint/-c-lab-programs" target="_blank">Source code</a>
-          </p>
-        </article>
-      </div>
-
-      <!-- C Quiz -->
-      <div class="timeline-item right reveal">
-        <div class="timeline-dot"></div>
-        <article class="project-card">
-          <h3 class="project-title">C Quiz Console App</h3>
-          <p class="project-meta">Tech: C · Functions · Arrays</p>
-          <p class="project-meta-line">Duration: 1 week · Role: Solo</p>
-          <p class="project-meta-line status">Status: Completed</p>
-          <p class="project-desc">
-            A terminal‑based quiz game that tests basic programming concepts and tracks score.
-          </p>
-        </article>
-      </div>
-
-      <!-- Portfolio v1 -->
-      <div class="timeline-item left reveal">
-        <div class="timeline-dot"></div>
-        <article class="project-card">
-          <h3 class="project-title">Personal Portfolio v1</h3>
-          <p class="project-meta">Tech: HTML · CSS · JS</p>
-          <p class="project-meta-line">Duration: 2 weeks · Role: Solo</p>
-          <p class="project-meta-line status">Status: In progress</p>
-          <p class="project-desc">
-            My first responsive static website with sections for skills, projects and contact.
-          </p>
-        </article>
-      </div>
-
-      <!-- Future AI/ML -->
-      <div class="timeline-item right reveal">
-        <div class="timeline-dot"></div>
-        <article class="project-card">
-          <h3 class="project-title">Future AI/ML Project</h3>
-          <p class="project-meta">Tech: Python · ML</p>
-          <p class="project-meta-line">Duration: Planned · Role: Solo</p>
-          <p class="project-meta-line status">Status: Planned</p>
-          <p class="project-desc">
-            Reserved for an upcoming mini machine‑learning project during BCA.
-          </p>
-        </article>
+      <div class="hero-counter">
+        <span class="counter-num">01</span>
+        <div class="counter-div"></div>
+        <span class="counter-total">06</span>
       </div>
     </section>
-<section id="projects" class="projects section">
-  <h2 class="section-title">Projects</h2>
-  
-  <div class="project-card">
-    <h3>Study Tracker</h3>
-    <div style="color:#9ea9ff;font-size:0.8rem;margin:0.5rem 0;">React • GitHub • 2026</div>
-    <p>Track BCA exams, coding practice, YouTube tutorials. Reminders + progress bars.</p>
-    <div style="margin:1rem 0;">
-      <a href="https://github.com/Alppoint/study-tracker" style="color:#9ea9ff;">GitHub →</a>
-    </div>
-  </div>
 
-  <div class="project-card">
-    <h3>JS Lab</h3>
-    <div style="color:#9ea9ff;font-size:0.8rem;margin:0.5rem 0;">HTML/CSS/JS • 2026</div>
-    <p>Arrays, forms, Bootstrap exercises from BCA Web Tech lab. Clean, documented code.</p>
-    <div style="margin:1rem 0;">
-      <a href="https://github.com/Alppoint/js-web-lab" style="color:#9ea9ff;">Live Repo →</a>
-    </div>
-  </div>
-</section>
+    <!-- WORK / TIMELINE -->
+    <section id="work" class="section work-section">
+      <div class="infinite-marquee">
+        <div class="marquee-inner">
+          <span>AKSHIT GAUR — CREATIVE DEVELOPER — ML ENTHUSIAST — </span>
+          <span>AKSHIT GAUR — CREATIVE DEVELOPER — ML ENTHUSIAST — </span>
+        </div>
+      </div>
 
+      <div class="section-header">
+        <p class="section-label">Selected Work</p>
+        <h2 class="section-title">Featured Projects</h2>
+        <p class="section-sub">A vertical spine of the work that defines me.</p>
+      </div>
+
+      <div class="timeline">
+        <div class="timeline-spine"></div>
+
+        <!-- Study Tracker -->
+        <div class="timeline-item left reveal-left">
+          <div class="timeline-dot"></div>
+          <article class="project-card" data-index="01">
+            <div class="card-top">
+              <span class="card-num">01</span>
+              <span class="card-status live">● Live</span>
+            </div>
+            <h3 class="card-title">Study Tracker</h3>
+            <div class="card-img-wrap">
+              <img src="study-tracker.png" alt="Study Tracker" class="card-img" loading="lazy">
+              <div class="card-img-overlay"></div>
+            </div>
+            <p class="card-tech">HTML · CSS · JavaScript · LocalStorage</p>
+            <p class="card-desc">Small web app that lets me record daily study sessions and keep a history — my first
+              fully deployed project.</p>
+            <div class="card-links">
+              <a href="https://alppoint.github.io/study-tracker/" target="_blank" class="card-link roll-btn"><span
+                  class="roll-text" data-text="Live demo →">Live demo →</span></a>
+              <a href="https://github.com/Alppoint/study-tracker" target="_blank" class="card-link ghost roll-btn"><span
+                  class="roll-text" data-text="Source ↗">Source ↗</span></a>
+            </div>
+          </article>
+        </div>
+        <!-- JS Web Lab -->
+        <div class="timeline-item right reveal-right">
+          <div class="timeline-dot"></div>
+          <article class="project-card" data-index="02">
+            <div class="card-top">
+              <span class="card-num">02</span>
+              <span class="card-status live">● Live</span>
+            </div>
+            <h3 class="card-title">JS & Web Lab</h3>
+            <div class="card-img-wrap">
+              <img src="js-web-lab_png.png" alt="JS Web Lab" class="card-img" loading="lazy">
+              <div class="card-img-overlay"></div>
+            </div>
+            <p class="card-tech">HTML · CSS · JavaScript · Bootstrap</p>
+            <p class="card-desc">Collection of BCA lab exercises — arrays, strings, forms, validation and Bootstrap
+              components. Clean, documented code.</p>
+            <div class="card-links">
+              <a href="https://alppoint.github.io/js-web-lab/" target="_blank" class="card-link roll-btn"><span
+                  class="roll-text" data-text="Live demo →">Live demo →</span></a>
+              <a href="https://github.com/Alppoint/js-web-lab" target="_blank" class="card-link ghost roll-btn"><span
+                  class="roll-text" data-text="Source ↗">Source ↗</span></a>
+            </div>
+          </article>
+        </div>
+
+        <!-- C Lab Programs -->
+        <div class="timeline-item left reveal-left">
+          <div class="timeline-dot"></div>
+          <article class="project-card" data-index="03">
+            <div class="card-top">
+              <span class="card-num">03</span>
+              <span class="card-status done">✓ Completed</span>
+            </div>
+            <h3 class="card-title">C Lab Programs</h3>
+            <div class="card-img-wrap">
+              <img src="c-lab-programs.png" alt="C Lab Programs" class="card-img" loading="lazy">
+              <div class="card-img-overlay"></div>
+            </div>
+            <p class="card-tech">C · VS Code · GCC · GitHub</p>
+            <p class="card-desc">Solved C exercises covering I/O, conditionals, loops, functions, arrays, strings,
+              pointers, structures and file handling.</p>
+            <div class="card-links">
+              <a href="https://github.com/Alppoint/-c-lab-programs" target="_blank" class="card-link">Source ↗</a>
+            </div>
+          </article>
+        </div>
+
+        <!-- C Quiz -->
+        <div class="timeline-item right reveal-right">
+          <div class="timeline-dot"></div>
+          <article class="project-card no-img" data-index="04">
+            <div class="card-top">
+              <span class="card-num">04</span>
+              <span class="card-status done">✓ Completed</span>
+            </div>
+            <h3 class="card-title">C Quiz Console App</h3>
+            <p class="card-tech">C · Functions · Arrays</p>
+            <p class="card-desc">A terminal-based quiz game that tests programming concepts and tracks the player's
+              score through structured C functions.</p>
+            <div class="card-tag-row">
+              <span class="tag">Terminal</span>
+              <span class="tag">C Language</span>
+              <span class="tag">1 Week</span>
+            </div>
+          </article>
+        </div>
+
+        <!-- Portfolio v1 -->
+        <div class="timeline-item left reveal-left">
+          <div class="timeline-dot"></div>
+          <article class="project-card no-img" data-index="05">
+            <div class="card-top">
+              <span class="card-num">05</span>
+              <span class="card-status wip">◐ In Progress</span>
+            </div>
+            <h3 class="card-title">Portfolio v1</h3>
+            <p class="card-tech">HTML · CSS · JS</p>
+            <p class="card-desc">This site — my first responsive portfolio with cinematic dark design, animated
+              timeline, custom cursor and scroll reveal.</p>
+            <div class="card-tag-row">
+              <span class="tag">Active Theory Style</span>
+              <span class="tag">Dark UI</span>
+            </div>
+          </article>
+        </div>
+
+        <!-- Future AI/ML -->
+        <div class="timeline-item right reveal-right">
+          <div class="timeline-dot dot-planned"></div>
+          <article class="project-card no-img planned" data-index="06">
+            <div class="card-top">
+              <span class="card-num">06</span>
+              <span class="card-status planned-s">○ Planned</span>
+            </div>
+            <h3 class="card-title">AI/ML Mini-Project</h3>
+            <p class="card-tech">Python · ML · TBD</p>
+            <p class="card-desc">Reserved for an upcoming machine-learning project during BCA — details coming as I
+              level up my Python skills.</p>
+            <div class="card-tag-row">
+              <span class="tag">Python</span>
+              <span class="tag">Machine Learning</span>
+              <span class="tag">BCA Semester</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
 
     <!-- ABOUT -->
-    <section id="about" class="section placeholder reveal">
-      <h2 class="section-title">About Me</h2>
-      <p class="section-subtitle">Who I am and what I’m building toward.</p>
-
-      <p style="max-width:640px; line-height:1.7; opacity:0.9;">
-        I’m a first‑year BCA student specializing in AI and Machine Learning, currently learning C, Python
-        and modern web development. I enjoy turning concepts from my courses into small, hands‑on projects –
-        from console apps in C to dark, cinematic websites like this one.
-      </p>
-      <br>
-      <p style="max-width:640px; line-height:1.7; opacity:0.9;">
-        Over the next few semesters I’m focusing on strengthening my core programming skills, building
-        AI/ML mini‑projects and experimenting with WebGL/Three.js for more immersive portfolio pieces.
-        This site will evolve as I learn, showcasing my best work and progress.
-      </p>
-      <ul style="max-width:640px; margin-top:1.25rem; line-height:1.8; opacity:0.9;">
-        <li><strong>Languages:</strong> C, Python (learning), JavaScript</li>
-        <li><strong>Web:</strong> HTML, CSS, basic Bootstrap</li>
-        <li><strong>Tools:</strong> VS Code, Git, GitHub</li>
-      </ul>
-
+    <section id="about" class="section about-section">
+      <div class="section-header">
+        <p class="section-label">Who I Am</p>
+        <h2 class="section-title">About Me</h2>
+      </div>
+      <div class="about-grid">
+        <div class="about-text reveal-up">
+          <p>I'm a first-year BCA student specializing in AI and Machine Learning, currently learning C, Python and
+            modern web development. I enjoy turning course concepts into hands-on projects — from console apps in C to
+            dark, cinematic websites like this one.</p>
+          <br>
+          <p>Over the next few semesters I'm focusing on core programming, AI/ML mini-projects and experimenting with
+            WebGL and Three.js for immersive portfolio pieces. This site evolves as I learn.</p>
+        </div>
+        <div class="about-skills reveal-up" style="--d:0.2s">
+          <div class="skill-group">
+            <h4>Languages</h4>
+            <div class="skill-pills">
+              <span class="pill">C</span>
+              <span class="pill">JavaScript</span>
+              <span class="pill muted">Python ↗</span>
+            </div>
+          </div>
+          <div class="skill-group">
+            <h4>Web</h4>
+            <div class="skill-pills">
+              <span class="pill">HTML</span>
+              <span class="pill">CSS</span>
+              <span class="pill">Bootstrap</span>
+            </div>
+          </div>
+          <div class="skill-group">
+            <h4>Tools</h4>
+            <div class="skill-pills">
+              <span class="pill">VS Code</span>
+              <span class="pill">Git</span>
+              <span class="pill">GitHub</span>
+            </div>
+          </div>
+          <div class="skill-group">
+            <h4>Learning</h4>
+            <div class="skill-pills">
+              <span class="pill muted">Three.js</span>
+              <span class="pill muted">WebGL</span>
+              <span class="pill muted">ML</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- CONTACT -->
-    <section id="contact" class="section placeholder reveal">
-      <h2 class="section-title">Contact</h2>
-      <p class="section-subtitle">Let’s connect for projects, internships or collaborations.</p>
-
+    <section id="contact" class="section contact-section">
+      <div class="section-header">
+        <p class="section-label">Get In Touch</p>
+        <h2 class="section-title">Contact</h2>
+        <p class="section-sub">Available for projects, internships and collaborations.</p>
+      </div>
       <div class="contact-grid">
-        <div class="contact-item">
+        <a href="mailto:akshitgaur54@gmail.com" class="contact-card reveal-up">
+          <span class="contact-icon">✉</span>
           <h3>Email</h3>
-          <a href="mailto:akshitgaur54@gmail.com">akshitgaur54@gmail.com</a>
-        </div>
-
-        <div class="contact-item">
+          <p>akshitgaur54@gmail.com</p>
+          <span class="contact-arrow">→</span>
+        </a>
+        <a href="https://github.com/Alppoint" target="_blank" class="contact-card reveal-up" style="--d:0.1s">
+          <span class="contact-icon">⌥</span>
           <h3>GitHub</h3>
-          <a href="https://github.com/Alppoint" target="_blank">github.com/Alppoint</a>
-        </div>
+          <p>github.com/Alppoint</p>
+          <span class="contact-arrow">→</span>
+        </a>
       </div>
     </section>
-  <!-- ADD FOOTER HERE -->
-<!-- FORCE FOOTER -->
-<div style="position:relative;z-index:100;padding:4rem 10vw 2rem;margin-top:4rem;border-top:1px solid rgba(255,255,255,0.15);text-align:center;">
-  <p style="color:#f5f5f5 !important;font-size:1.1rem;margin:0;font-weight:500;letter-spacing:0.03em;">
-    Made with ❤️ <span style="color:#00ffc3;"></span> | 
-    <a href="https://github.com/Alppoint/ActivePortfolioMain" target="_blank" style="color:#00ffc3 !important;text-decoration:none;font-weight:600;">
-      View Source →
-    </a>
-  </p>
-</div>
 
+    <!-- FOOTER -->
+    <footer class="footer">
+      <p>Made with <span class="heart">❤</span> in Gurugram, India</p>
+      <a href="https://github.com/Alppoint/ActivePortfolioMain" target="_blank">View Source ↗</a>
+    </footer>
 
   </main>
 
-  <div class="cursor"></div>
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-trail" id="cursorTrail"></div>
+
+  <!-- Ultimate Premium UI -->
+  <div class="scroll-tracker"><div class="scroll-tracker-bar" id="scrollTrackerBar"></div></div>
+  <div class="xray-spotlight" id="xraySpotlight"></div>
+  <canvas class="dust-canvas" id="dustCanvas"></canvas>
+
+  <!-- External Libraries -->
+  <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
   <script src="script.js"></script>
-
-  <!-- Smooth scroll + scroll reveal -->
-  <script>
-    // Smooth scroll for internal links
-    document.querySelectorAll('a[href^="#"]').forEach(link => {
-      link.addEventListener('click', e => {
-        const target = document.querySelector(link.getAttribute('href'));
-        if (!target) return;
-        e.preventDefault();
-        target.scrollIntoView({ behavior: 'smooth' });
-      });
-    });
-
-    // Reveal elements on scroll
-    const revealEls = document.querySelectorAll('.reveal');
-    const onScroll = () => {
-      const trigger = window.innerHeight * 0.8;
-      revealEls.forEach(el => {
-        const rect = el.getBoundingClientRect();
-        if (rect.top < trigger) {
-          el.classList.add('revealed');
-        }
-      });
-    };
-    window.addEventListener('scroll', onScroll);
-    onScroll();
-  </script>
 </body>
+
 </html>
