@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expense Tracker — Akshit Gaur</title>
+  <meta name="description" content="A cinematic dark-mode expense tracker with real-time charts, category breakdowns, and localStorage persistence.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- NOISE LAYER -->
+  <div class="noise"></div>
+
+  <!-- BACK LINK -->
+  <a href="../index.html" class="back-link" id="backLink">
+    <span class="back-arrow">←</span>
+    <span>Portfolio</span>
+  </a>
+
+  <!-- HEADER -->
+  <header class="app-header">
+    <div class="header-left">
+      <p class="app-eyebrow">Personal Finance — v1.0</p>
+      <h1 class="app-title">Expense<span class="accent"> Tracker</span></h1>
+    </div>
+    <div class="header-right">
+      <div class="total-bubble" id="totalBubble">
+        <span class="total-label">Total Spent</span>
+        <span class="total-amount" id="totalAmount">₹0.00</span>
+      </div>
+      <button class="btn-reset" id="btnReset" title="Clear all data">Reset All</button>
+    </div>
+  </header>
+
+  <main class="app-main">
+
+    <!-- LEFT COLUMN: Form + Chart -->
+    <aside class="left-col">
+
+      <!-- ADD EXPENSE FORM -->
+      <section class="glass-card form-card">
+        <h2 class="card-heading">Add Expense</h2>
+        <form id="expenseForm" autocomplete="off">
+          <div class="field-group">
+            <label for="expAmount">Amount (₹)</label>
+            <div class="input-wrap">
+              <span class="input-prefix">₹</span>
+              <input type="number" id="expAmount" placeholder="0.00" min="0.01" step="0.01" required>
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="expCategory">Category</label>
+            <div class="select-wrap">
+              <select id="expCategory" required>
+                <option value="" disabled selected>Select category</option>
+                <option value="Food">🍔 Food</option>
+                <option value="Transport">🚌 Transport</option>
+                <option value="Shopping">🛍️ Shopping</option>
+                <option value="Entertainment">🎮 Entertainment</option>
+                <option value="Health">💊 Health</option>
+                <option value="Education">📚 Education</option>
+                <option value="Bills">💡 Bills</option>
+                <option value="Other">📦 Other</option>
+              </select>
+              <span class="select-arrow">▾</span>
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="expDesc">Description</label>
+            <input type="text" id="expDesc" placeholder="e.g. Lunch at college canteen" maxlength="60">
+          </div>
+          <div class="field-group">
+            <label for="expDate">Date</label>
+            <input type="date" id="expDate" required>
+          </div>
+          <button type="submit" class="btn-add" id="btnAdd">
+            <span class="btn-add-text">Add Expense</span>
+            <span class="btn-add-icon">+</span>
+          </button>
+        </form>
+      </section>
+
+      <!-- DONUT CHART -->
+      <section class="glass-card chart-card">
+        <h2 class="card-heading">Breakdown</h2>
+        <div class="chart-wrap">
+          <canvas id="donutCanvas" width="220" height="220"></canvas>
+          <div class="chart-center" id="chartCenter">
+            <span class="chart-center-label">Categories</span>
+            <span class="chart-center-val" id="chartCenterVal">—</span>
+          </div>
+        </div>
+        <ul class="legend" id="legend"></ul>
+      </section>
+
+    </aside>
+
+    <!-- RIGHT COLUMN: Stats + Transactions -->
+    <section class="right-col">
+
+      <!-- STAT CARDS -->
+      <div class="stat-row">
+        <div class="stat-card glass-card">
+          <p class="stat-label">This Month</p>
+          <p class="stat-val" id="statMonth">₹0</p>
+        </div>
+        <div class="stat-card glass-card">
+          <p class="stat-label">Avg / Day</p>
+          <p class="stat-val" id="statAvg">₹0</p>
+        </div>
+        <div class="stat-card glass-card">
+          <p class="stat-label">Transactions</p>
+          <p class="stat-val" id="statCount">0</p>
+        </div>
+        <div class="stat-card glass-card">
+          <p class="stat-label">Top Category</p>
+          <p class="stat-val" id="statTop">—</p>
+        </div>
+      </div>
+
+      <!-- FILTER BAR -->
+      <div class="filter-bar glass-card">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search expenses…">
+        <div class="filter-pills" id="filterPills">
+          <button class="fpill active" data-cat="All">All</button>
+          <button class="fpill" data-cat="Food">Food</button>
+          <button class="fpill" data-cat="Transport">Transport</button>
+          <button class="fpill" data-cat="Shopping">Shopping</button>
+          <button class="fpill" data-cat="Entertainment">Entertainment</button>
+          <button class="fpill" data-cat="Health">Health</button>
+          <button class="fpill" data-cat="Education">Education</button>
+          <button class="fpill" data-cat="Bills">Bills</button>
+          <button class="fpill" data-cat="Other">Other</button>
+        </div>
+      </div>
+
+      <!-- TRANSACTION LIST -->
+      <div class="txn-list glass-card" id="txnList">
+        <div class="txn-list-header">
+          <h2 class="card-heading" style="margin:0">Transactions</h2>
+          <span class="txn-count" id="txnCount">0 entries</span>
+        </div>
+        <ul id="txnItems" class="txn-items"></ul>
+        <div class="empty-state" id="emptyState">
+          <p class="empty-icon">💸</p>
+          <p>No expenses yet.<br>Add one above!</p>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <!-- CONFIRM MODAL -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal glass-card">
+      <p class="modal-msg" id="modalMsg">Are you sure?</p>
+      <div class="modal-btns">
+        <button class="btn-ghost-small" id="modalCancel">Cancel</button>
+        <button class="btn-danger" id="modalConfirm">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

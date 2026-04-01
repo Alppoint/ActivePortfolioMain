@@ -73,7 +73,7 @@
       <div class="hero-counter">
         <span class="counter-num">01</span>
         <div class="counter-div"></div>
-        <span class="counter-total">06</span>
+        <span class="counter-total">07</span>
       </div>
     </section>
 
@@ -119,6 +119,10 @@
             </div>
           </article>
         </div>
+
+
+
+
         <!-- JS Web Lab -->
         <div class="timeline-item right reveal-right">
           <div class="timeline-dot"></div>
@@ -205,12 +209,36 @@
           </article>
         </div>
 
-        <!-- Future AI/ML -->
+        <!-- Expense Tracker -->
         <div class="timeline-item right reveal-right">
-          <div class="timeline-dot dot-planned"></div>
-          <article class="project-card no-img planned" data-index="06">
+          <div class="timeline-dot"></div>
+          <article class="project-card no-img" data-index="06">
             <div class="card-top">
               <span class="card-num">06</span>
+              <span class="card-status live">● Live</span>
+            </div>
+            <h3 class="card-title">Expense Tracker</h3>
+            <p class="card-tech">HTML · CSS · JavaScript · LocalStorage · Canvas</p>
+            <p class="card-desc">A cinematic dark-mode expense tracker with live donut charts, category filters,
+              monthly stats and full CRUD — all in the browser, zero dependencies.</p>
+            <div class="card-tag-row">
+              <span class="tag">Finance UI</span>
+              <span class="tag">Canvas 2D</span>
+              <span class="tag">Dark UI</span>
+            </div>
+            <div class="card-links">
+              <a href="expense-tracker/index.html" class="card-link roll-btn"><span
+                  class="roll-text" data-text="Open App →">Open App →</span></a>
+            </div>
+          </article>
+        </div>
+
+        <!-- Future AI/ML -->
+        <div class="timeline-item left reveal-left">
+          <div class="timeline-dot dot-planned"></div>
+          <article class="project-card no-img planned" data-index="07">
+            <div class="card-top">
+              <span class="card-num">07</span>
               <span class="card-status planned-s">○ Planned</span>
             </div>
             <h3 class="card-title">AI/ML Mini-Project</h3>
@@ -314,7 +342,9 @@
   <div class="cursor-trail" id="cursorTrail"></div>
 
   <!-- Ultimate Premium UI -->
-  <div class="scroll-tracker"><div class="scroll-tracker-bar" id="scrollTrackerBar"></div></div>
+  <div class="scroll-tracker">
+    <div class="scroll-tracker-bar" id="scrollTrackerBar"></div>
+  </div>
   <div class="xray-spotlight" id="xraySpotlight"></div>
   <canvas class="dust-canvas" id="dustCanvas"></canvas>
 
