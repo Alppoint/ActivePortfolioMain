@@ -1,4 +1,4 @@
-// ===== LENIS SMOOTH SCROLL =====
+// smooth scrolling using the Lenis library
 const lenis = new Lenis({
   duration: 1.2,
   easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -17,18 +17,18 @@ function raf(time) {
 }
 requestAnimationFrame(raf)
 
-// Register GSAP plugins
+// register GSAP scroll plugin
 if (typeof gsap !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-// ===== THREE.JS WEBGL BACKGROUND =====
+// three.js background - draws the floating particle dots
 (function initThreeJS() {
   const canvas = document.getElementById('heroCanvas');
   if (!canvas || typeof THREE === 'undefined') return;
 
   const scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0x030305, 0.001); // Deep space fog
+  // fog makes the particles fade to black in the distance
 
   const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
   camera.position.z = 200;
@@ -37,7 +37,7 @@ if (typeof gsap !== 'undefined') {
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-  // Particle System Network
+  // create 2000 particles with random positions and colors
   const geometry = new THREE.BufferGeometry();
   const particlesCount = 2000;
   const posArray = new Float32Array(particlesCount * 3);
@@ -51,7 +51,7 @@ if (typeof gsap !== 'undefined') {
       posArray[i+1] = (Math.random() - 0.5) * 600;    // y
       posArray[i+2] = (Math.random() - 0.5) * 400;    // z
 
-      // Blend cyan and purple dynamically
+      // mix cyan and purple randomly for each particle
       const mixedColor = colorCyan.clone().lerp(colorPurple, Math.random());
       colorArray[i] = mixedColor.r;
       colorArray[i+1] = mixedColor.g;
@@ -72,7 +72,7 @@ if (typeof gsap !== 'undefined') {
   const particlesMesh = new THREE.Points(geometry, material);
   scene.add(particlesMesh);
 
-  // Mouse Interaction Variables
+  // track mouse position so particles react to it
   let mouseX = 0;
   let mouseY = 0;
   let targetX = 0;
@@ -86,26 +86,26 @@ if (typeof gsap !== 'undefined') {
       mouseY = (event.clientY - windowHalfY);
   });
 
-  // Animation Loop
+  // animation loop - runs every frame
   const clock = new THREE.Clock();
 
   function animate() {
       requestAnimationFrame(animate);
       const elapsedTime = clock.getElapsedTime();
 
-      // Smooth mouse follow
+      // slowly follow the mouse
       targetX = mouseX * 0.001;
       targetY = mouseY * 0.001;
 
-      // Base rotation
+      // slowly rotate the particle cloud
       particlesMesh.rotation.y += 0.001; 
       particlesMesh.rotation.x += 0.0005;
 
-      // Add mouse movement offset
+      // also tilt towards where the mouse is
       particlesMesh.rotation.y += 0.05 * (targetX - particlesMesh.rotation.y);
       particlesMesh.rotation.x += 0.05 * (targetY - particlesMesh.rotation.x);
 
-      // Add gentle wave emotion to points
+      // make each particle drift up and down gently
       const positions = geometry.attributes.position.array;
       for(let i = 0; i < particlesCount; i++) {
           const i3 = i * 3;
@@ -119,7 +119,7 @@ if (typeof gsap !== 'undefined') {
   }
   animate();
 
-  // Resize handler
+  // update canvas size when window is resized
   window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
@@ -128,11 +128,11 @@ if (typeof gsap !== 'undefined') {
   });
 })();
 
-// ===== GSAP ANIMATIONS =====
+// gsap animations - handles the preloader and scroll reveals
 (function initGSAP() {
   if (typeof gsap === 'undefined') return;
 
-  // Master Sequence including Preloader
+  // preloader counts from 0 to 100% then slides away
   const masterTimeline = gsap.timeline();
   if (typeof lenis !== 'undefined') lenis.stop();
 
@@ -158,7 +158,7 @@ if (typeof gsap !== 'undefined') {
     }
   }, "+=0.2");
 
-  // Hero Section Cinematic Sequence
+  // hero section - each element fades in one by one
   const heroTimeline = gsap.timeline({ defaults: { ease: 'power4.out', duration: 1.5 } });
 
   heroTimeline
@@ -180,7 +180,7 @@ if (typeof gsap !== 'undefined') {
 
   masterTimeline.add(heroTimeline, "-=0.6");
 
-  // Scroll Animations for Project Timeline Items (Fade Up & Stagger)
+  // fade in each project card as the user scrolls to it
   const items = document.querySelectorAll('.timeline-item');
   items.forEach((item, i) => {
     // Hide old hardcoded reveal classes as GSAP takes over
@@ -201,7 +201,7 @@ if (typeof gsap !== 'undefined') {
     );
   });
 
-  // Staggering About Section
+  // fade in the about section text
   gsap.fromTo('.about-text', 
     { opacity: 0, y: 40 }, 
     { opacity: 1, y: 0, duration: 1, scrollTrigger: { trigger: '.about-grid', start: 'top 80%' } });
@@ -210,7 +210,7 @@ if (typeof gsap !== 'undefined') {
     { opacity: 0, x: -30 }, 
     { opacity: 1, x: 0, stagger: 0.1, duration: 0.8, scrollTrigger: { trigger: '.about-grid', start: 'top 70%' } });
 
-  // Contact Grid Reveal
+  // fade in the contact cards
   const contactCards = document.querySelectorAll('.contact-card');
   contactCards.forEach((card, i) => {
       gsap.fromTo(card, { opacity: 0, y: 40 }, {
@@ -223,7 +223,7 @@ if (typeof gsap !== 'undefined') {
   });
 })();
 
-// ===== CUSTOM CURSOR MAGNETIC EFFECT =====
+// custom cursor that follows the mouse
 const cursor = document.getElementById('cursor');
 const trail = document.getElementById('cursorTrail');
 let trailX = 0, trailY = 0;
@@ -234,7 +234,7 @@ if (cursor && window.innerWidth > 768) {
     cursor.style.top = e.clientY + 'px';
 
     const target = e.target;
-    // Expanded hover targets for magnetic effect
+    // make the cursor bigger when hovering over clickable things
     const isHoverable = target.closest('a, button, .project-card, .contact-card, .pill');
     
     if (isHoverable) {
@@ -260,13 +260,13 @@ if (cursor && window.innerWidth > 768) {
   }
 }
 
-// ===== NAV BLUR SCROLL EFFECT =====
+// add a blur effect to the nav bar when the user scrolls down
 const nav = document.getElementById('nav');
 window.addEventListener('scroll', () => {
   if (nav) nav.classList.toggle('scrolled', window.scrollY > 40);
 });
 
-// ===== MOBILE HAMBURGER MENU =====
+// hamburger menu for mobile screens
 const hamburger = document.getElementById('hamburger');
 const navLinks = document.getElementById('navLinks');
 if (hamburger && navLinks) {
@@ -296,7 +296,7 @@ if (hamburger && navLinks) {
   });
 }
 
-// ===== THEME TOGGLE =====
+// dark/light theme toggle button
 const themeBtn = document.getElementById('theme-btn');
 if (themeBtn) {
   const saved = localStorage.getItem('theme') || 'dark';
@@ -311,7 +311,7 @@ if (themeBtn) {
   });
 }
 
-// ===== LENIS SCROLL ANCHORS =====
+// smooth scroll when clicking links like #work or #about
 document.querySelectorAll('a[href^="#"]').forEach(link => {
   link.addEventListener('click', e => {
     const target = document.querySelector(link.getAttribute('href'));
@@ -323,7 +323,7 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
   });
 });
 
-// ===== SIDE COUNTER SYNC =====
+// update the 01/06 counter in the bottom left of the hero
 (function syncCounter() {
   const counterNum = document.querySelector('.counter-num');
   if (!counterNum) return;
@@ -338,9 +338,9 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
   });
 })();
 
-// ===== ACTIVE THEORY ULTRA POLISH =====
+// extra visual effects below
 
-// 1. RGB Glitch on Mouse Move
+// 1. title tilts slightly based on where the mouse is
 const heroTitleLines = document.querySelectorAll('.title-line');
 document.addEventListener('mousemove', (e) => {
   const x = (e.clientX / window.innerWidth - 0.5) * 2;
@@ -354,19 +354,16 @@ document.addEventListener('mousemove', (e) => {
   });
 });
 
-// 2. Skew on Scroll Context
+// 2. images tilt slightly when scrolling fast
 const projectCards = document.querySelectorAll('.project-card');
 if (typeof lenis !== 'undefined') {
   lenis.on('scroll', (e) => {
-    // Lenis provides e.velocity
     const velocity = e.velocity || 0;
-    // Cap skew max degrees
+    // keep skew between -5 and 5 degrees
     const skew = Math.min(Math.max(velocity, -5), 5);
     
-    // Apply skew safely to project cards. 
-    // We update inline transform, allowing CSS transition to handle smooth snapping when stopped.
+    // only skew the image, not the whole card
     projectCards.forEach(card => {
-        // We only skew the inner image wrap to preserve hover states on the card itself
         const imgWrap = card.querySelector('.card-img-wrap');
         if (imgWrap) {
            imgWrap.style.transform = `skewY(${skew * 0.8}deg) scale(1.02)`;
@@ -381,9 +378,7 @@ if (typeof lenis !== 'undefined') {
   });
 }
 
-// ===== GOD-TIER FEATURES  =====
-
-// 3. Cyber-Scrambler Text Decoder
+// 3. text scramble effect - letters shuffle before revealing
 class TextScrambler {
   constructor(el) {
     this.el = el;
@@ -443,7 +438,7 @@ scrambleTargets.forEach((el) => {
     });
 });
 
-// 4. True Magnetic Button Physics
+// 4. buttons get pulled slightly towards the mouse (magnetic effect)
 const magneticBtns = document.querySelectorAll('.roll-btn');
 magneticBtns.forEach(btn => {
     btn.addEventListener('mousemove', (e) => {
@@ -451,7 +446,7 @@ magneticBtns.forEach(btn => {
         const x = e.clientX - rect.left - rect.width / 2;
         const y = e.clientY - rect.top - rect.height / 2;
         
-        // Pull strength
+        // how strong the pull is
         gsap.to(btn, { x: x * 0.3, y: y * 0.3, duration: 0.6, ease: 'power3.out' });
         const text = btn.querySelector('.roll-text');
         if(text) gsap.to(text, { x: x * 0.15, y: y * 0.15, duration: 0.6, ease: 'power3.out' });
@@ -463,7 +458,7 @@ magneticBtns.forEach(btn => {
     });
 });
 
-// 5. 3D Mouse Parallax on Images (Tilt)
+// 5. hovering a project card makes the image tilt in 3d
 projectCards.forEach(card => {
     const imgWrap = card.querySelector('.card-img-wrap');
     if(!imgWrap) return;
@@ -476,10 +471,10 @@ projectCards.forEach(card => {
         const posX = (e.clientX - centerX) / (rect.width / 2);
         const posY = (e.clientY - centerY) / (rect.height / 2);
         
-        const tiltX = posY * -15; // tilt around X axis
-        const tiltY = posX * 15; // tilt around Y axis
+        const tiltX = posY * -15; // tilt up/down
+        const tiltY = posX * 15;  // tilt left/right
 
-        // Scale and lift card
+        // lift the card and add a glow
         gsap.to(card, {
              y: -8,
              boxShadow: '0 25px 60px rgba(0,0,0,0.8), 0 0 40px rgba(0,255,195,0.15)',
@@ -487,7 +482,7 @@ projectCards.forEach(card => {
              duration: 0.4
         });
         
-        // Tilt Image
+        // also tilt the image inside
         gsap.to(imgWrap, {
              rotationX: tiltX,
              rotationY: tiltY,
@@ -515,9 +510,9 @@ projectCards.forEach(card => {
     });
 });
 
-// ===== ULTIMATE PREMIUM FEATURES =====
+// more visual effects below
 
-// 1. X-Ray Spotlight Veil
+// 1. spotlight that follows the mouse in the about section
 const xray = document.getElementById('xraySpotlight');
 if (xray) {
     gsap.set(xray, { xPercent: -50, yPercent: -50 });
@@ -540,7 +535,7 @@ if (xray) {
     }
 }
 
-// 2. Neon Click Shockwave
+// 2. ripple effect when you click anywhere on the page
 document.addEventListener('click', (e) => {
     const wave = document.createElement('div');
     wave.className = 'click-shockwave';
@@ -560,7 +555,7 @@ document.addEventListener('click', (e) => {
     });
 });
 
-// 3. Ambient Digital Dust
+// 3. tiny floating particles drifting upwards when scrolled past hero
 const dustCanvas = document.getElementById('dustCanvas');
 if (dustCanvas) {
     const dctx = dustCanvas.getContext('2d');
@@ -600,7 +595,7 @@ if (dustCanvas) {
     drawDust();
 }
 
-// 4. Precision HUD Scroll Tracker
+// 4. the thin vertical line on the side that shows scroll progress
 const trackerBar = document.getElementById('scrollTrackerBar');
 if (typeof lenis !== 'undefined' && trackerBar) {
     lenis.on('scroll', (e) => {

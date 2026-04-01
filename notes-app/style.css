@@ -1,11 +1,9 @@
-/* ==============================================
-   NOTES APP — style.css
-   5 Themes: midnight · aurora · ember · ocean · parchment
-   ============================================== */
+/* notes app styles */
+/* 5 themes - each one just changes the css variables below */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ── Theme tokens ────────────────────────────── */
+/* css variables for the default dark theme (midnight) */
 :root,
 [data-theme="midnight"] {
   --bg:        #08080f;
@@ -107,7 +105,7 @@
   --noise-op:  0.025;
 }
 
-/* ── Base ───────────────────────────────────── */
+/* basic reset */
 html { height: 100%; }
 body {
   height: 100%; overflow: hidden;
@@ -123,7 +121,7 @@ body {
   transition: opacity .4s;
 }
 
-/* ── App Layout ─────────────────────────────── */
+/* noise overlay to add texture to the background */
 .app {
   position: relative; z-index: 1;
   display: grid;
@@ -132,7 +130,7 @@ body {
   transition: background .4s;
 }
 
-/* ── Sidebar ─────────────────────────────────  */
+/* the sidebar on the left side */
 .sidebar {
   background: var(--sidebar);
   border-right: 1px solid var(--border);
@@ -295,7 +293,7 @@ body {
   transform: scale(1.15);
 }
 
-/* ── Editor Pane ─────────────────────────────── */
+/* the main editor area on the right */
 .editor-pane {
   display: flex; flex-direction: column;
   background: var(--bg); height: 100vh; overflow: hidden;
@@ -425,7 +423,7 @@ body {
 .note-body::-webkit-scrollbar { width: 5px; }
 .note-body::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 99px; }
 
-/* ── Toast ──────────────────────────────────── */
+/* small popup notification */
 .toast {
   position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(60px);
   background: var(--surface); border: 1px solid var(--border);
@@ -437,7 +435,7 @@ body {
 }
 .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-/* ── Modal ──────────────────────────────────── */
+/* delete confirmation popup */
 .modal-overlay {
   position: fixed; inset: 0; z-index: 500;
   background: rgba(0,0,0,.65); backdrop-filter: blur(4px);
@@ -468,14 +466,14 @@ body {
 }
 .mbtn.danger:hover { background: rgba(239,68,68,.28); }
 
-/* ── Note color accent map ───────────────────── */
+/* color accent for each note color option */
 [data-note-color="rose"]   { --item-color: #f43f5e; }
 [data-note-color="amber"]  { --item-color: #f59e0b; }
 [data-note-color="teal"]   { --item-color: #14b8a6; }
 [data-note-color="sky"]    { --item-color: #38bdf8; }
 [data-note-color="violet"] { --item-color: #a78bfa; }
 
-/* ── Responsive ─────────────────────────────── */
+/* mobile styles - stack sidebar and editor vertically */
 @media (max-width: 700px) {
   .app { grid-template-columns: 1fr; }
 
@@ -494,7 +492,7 @@ body {
   .note-body { padding: 1rem 1rem 2rem; }
 }
 
-/* ── Global scrollbar ─────────────────────────── */
+/* style the browser scrollbar */
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 99px; }

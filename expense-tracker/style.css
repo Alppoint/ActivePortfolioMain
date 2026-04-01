@@ -1,9 +1,7 @@
-/* ============================================
-   EXPENSE TRACKER — CINEMATIC DARK THEME
-   Akshit Gaur Portfolio
-   ============================================ */
+/* expense tracker styles */
+/* all measurements use css variables at the top so they're easy to change */
 
-/* -- Reset & Base -------------------------------- */
+/* basic reset - removes default browser margins and padding */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
@@ -47,14 +45,14 @@ body {
   position: relative;
 }
 
-/* -- Noise Texture ------------------------------ */
+/* noise texture overlay to make the background look less flat */
 .noise {
   position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
   opacity: .5;
 }
 
-/* -- Back Link ---------------------------------- */
+/* the back to portfolio link in the top left */
 .back-link {
   position: fixed; top: 24px; left: 28px; z-index: 100;
   display: flex; align-items: center; gap: 8px;
@@ -67,7 +65,7 @@ body {
 .back-arrow { display: inline-block; transition: transform .25s var(--trans); }
 .back-link:hover .back-arrow { transform: translateX(-4px); }
 
-/* -- App Header --------------------------------- */
+/* the header at the top with the title and total amount */
 .app-header {
   position: relative; z-index: 10;
   display: flex; align-items: flex-end; justify-content: space-between;
@@ -125,7 +123,7 @@ body {
   border-color: var(--danger);
 }
 
-/* -- Layout ------------------------------------- */
+/* two column layout - form on left, transactions on right */
 .app-main {
   position: relative; z-index: 5;
   display: grid;
@@ -141,7 +139,7 @@ body {
   .back-link { left: 16px; }
 }
 
-/* -- Glass Card --------------------------------- */
+/* glass card - the frosted glass style boxes */
 .glass-card {
   background: var(--glass);
   border: 1px solid var(--border);
@@ -159,10 +157,10 @@ body {
   margin-bottom: 1.25rem;
 }
 
-/* -- Left Column -------------------------------- */
+/* left column that holds the form and chart */
 .left-col { display: flex; flex-direction: column; gap: 1.5rem; }
 
-/* -- Form Card ---------------------------------- */
+/* the add expense form */
 
 .field-group { margin-bottom: 1rem; }
 .field-group label {
@@ -229,7 +227,7 @@ select option { background: #18182c; color: var(--text); }
 .btn-add-text, .btn-add-icon { position: relative; z-index: 1; }
 .btn-add-icon { font-size: 1.2rem; font-weight: 400; }
 
-/* -- Chart Card --------------------------------- */
+/* the donut chart section */
 
 .chart-wrap {
   position: relative; display: flex; justify-content: center;
@@ -266,10 +264,10 @@ select option { background: #18182c; color: var(--text); }
   font-family: var(--font-mono); font-size: .72rem; color: var(--muted);
 }
 
-/* -- Right Column ------------------------------- */
+/* right column with stats and transaction list */
 .right-col { display: flex; flex-direction: column; gap: 1.25rem; }
 
-/* -- Stat Row ----------------------------------- */
+/* the 4 stat cards at the top right */
 .stat-row {
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;
 }
@@ -288,7 +286,7 @@ select option { background: #18182c; color: var(--text); }
 }
 .stat-val.bump { color: var(--accent2); }
 
-/* -- Filter Bar --------------------------------- */
+/* filter bar with search and category pills */
 .filter-bar {
   display: flex; flex-direction: column; gap: .85rem; padding: 1rem 1.25rem;
 }
@@ -318,7 +316,7 @@ select option { background: #18182c; color: var(--text); }
   color: #fff; box-shadow: 0 0 12px var(--glow);
 }
 
-/* -- Transaction List --------------------------- */
+/* the main list of transactions */
 .txn-list { padding: 1.25rem 1.5rem; }
 
 .txn-list-header {
@@ -380,7 +378,7 @@ select option { background: #18182c; color: var(--text); }
 }
 .txn-del:hover { color: var(--danger); background: rgba(239,68,68,.1); }
 
-/* -- Empty State -------------------------------- */
+/* shown when no expenses exist */
 .empty-state {
   text-align: center; padding: 2.5rem 1rem;
   color: var(--muted); font-size: .9rem; line-height: 1.7;
@@ -388,7 +386,7 @@ select option { background: #18182c; color: var(--text); }
 .empty-icon { font-size: 2.5rem; margin-bottom: .5rem; }
 .empty-state.hidden { display: none; }
 
-/* -- Toast -------------------------------------- */
+/* small popup notification at the bottom */
 .toast {
   position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px);
   background: #1a1a2e; border: 1px solid var(--border);
@@ -401,7 +399,7 @@ select option { background: #18182c; color: var(--text); }
 }
 .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-/* -- Modal -------------------------------------- */
+/* confirmation popup before deleting */
 .modal-overlay {
   position: fixed; inset: 0; z-index: 500;
   background: rgba(0,0,0,.7); backdrop-filter: blur(4px);
@@ -431,7 +429,7 @@ select option { background: #18182c; color: var(--text); }
 }
 .btn-danger:hover { background: rgba(239,68,68,.28); }
 
-/* -- Scrollbar Global --------------------------- */
+/* style the browser scrollbar */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.08); border-radius: 99px; }
