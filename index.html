@@ -10,49 +10,71 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap"
     rel="stylesheet">
+  <!-- Tailwind CSS v3 Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'ag-bg': '#06060a',
+            'ag-bg2': '#0a0a10',
+            'ag-cyan': '#5eead4',
+            'ag-purple': '#a78bfa',
+            'ag-gold': '#e8c547',
+            'ag-red': '#fb7185',
+          },
+          fontFamily: {
+            'display': ['Syne', 'sans-serif'],
+            'mono': ['Space Mono', 'monospace'],
+          },
+        },
+      },
+    }
+  </script>
   <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
+<body class="font-display overflow-x-hidden cursor-none">
   <!-- PRELOADER -->
   <div id="preloader" class="preloader">
     <div class="preloader-counter" id="preloader-counter">00%</div>
   </div>
 
   <!-- NAV -->
-  <header class="nav" id="nav">
-    <div class="nav-logo">
-      <span class="nav-logo-glow">AG</span>
-    </div>
-    <nav class="nav-links" id="navLinks">
-      <a href="#work">Work</a>
-      <a href="#about">About</a>
-      <a href="#contact">Contact</a>
-    </nav>
-    <div class="nav-right">
-      <button id="theme-btn" class="theme-btn" aria-label="Toggle theme">🌙</button>
-      <button class="hamburger" id="hamburger" aria-label="Toggle Menu">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-  </header>
+    <header class="nav fixed top-0 left-0 right-0 h-16 flex items-center justify-between px-12 z-[1000] transition-all duration-400" id="nav">
+      <div class="nav-logo font-mono text-sm tracking-[0.15em] font-bold">
+        <span class="nav-logo-glow">AG</span>
+      </div>
+      <nav class="nav-links flex gap-10" id="navLinks">
+        <a href="#work" class="font-mono text-xs tracking-[0.2em] uppercase no-underline relative transition-colors duration-300">Work</a>
+        <a href="#about" class="font-mono text-xs tracking-[0.2em] uppercase no-underline relative transition-colors duration-300">About</a>
+        <a href="#contact" class="font-mono text-xs tracking-[0.2em] uppercase no-underline relative transition-colors duration-300">Contact</a>
+      </nav>
+      <div class="nav-right flex items-center gap-4">
+        <button id="theme-btn" class="theme-btn" aria-label="Toggle theme">🌙</button>
+        <button class="hamburger" id="hamburger" aria-label="Toggle Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </header>
 
   <main>
 
     <!-- HERO -->
-    <section class="hero" id="hero">
+    <section class="hero relative min-h-screen flex flex-col justify-center px-12" id="hero">
       <canvas class="hero-canvas" id="heroCanvas"></canvas>
       <div class="hero-noise"></div>
 
       <div class="hero-content">
-        <p class="hero-eyebrow reveal-up" style="--d:0s">BCA · AI/ML · Web 開発</p>
+        <p class="hero-eyebrow reveal-up" style="--d:0s">BCA · AI/ML · Active-theory web</p>
         <h1 class="hero-title">
           <div class="title-mask"><span class="title-line">Akshit</span></div>
           <div class="title-mask"><span class="title-line accent-line">Gaur.</span></div>
         </h1>
         <p class="hero-subtitle reveal-up" style="--d:0.3s">
-          First-year BCA student building cinematic web experiences.<br>
-          <span class="jp">日本を目指して</span> — Turning ideas into interactive stories.
+          First-year BCA student building cinematic, motion-led web experiences — depth, scroll, and light as part of the story.<br>
+          <span class="jp">日本を目指して</span> — Crafting interfaces that feel alive.
         </p>
         <div class="hero-cta reveal-up" style="--d:0.45s">
           <a href="#work" class="btn-primary roll-btn">
@@ -86,10 +108,10 @@
         </div>
       </div>
 
-      <div class="section-header">
-        <p class="section-label">Selected Work</p>
-        <h2 class="section-title">Featured Projects</h2>
-        <p class="section-sub">A vertical spine of the work that defines me.</p>
+      <div class="section-header mb-20">
+        <p class="section-label font-mono text-[0.68rem] tracking-[0.4em] uppercase mb-4">Selected Work</p>
+        <h2 class="section-title font-display text-[clamp(2rem,4vw,3.2rem)] font-extrabold leading-tight mb-4">Featured Projects</h2>
+        <p class="section-sub text-base max-w-lg">A vertical spine of the work that defines me.</p>
       </div>
 
       <div class="timeline">
@@ -265,22 +287,29 @@
           </article>
         </div>
 
-        <!-- Future AI/ML -->
+        <!-- Gym App -->
         <div class="timeline-item right reveal-right">
-          <div class="timeline-dot dot-planned"></div>
-          <article class="project-card no-img planned" data-index="08">
+          <div class="timeline-dot"></div>
+          <article class="project-card" data-index="08">
             <div class="card-top">
               <span class="card-num">08</span>
-              <span class="card-status planned-s">○ Planned</span>
+              <span class="card-status live">● Live</span>
             </div>
-            <h3 class="card-title">AI/ML Mini-Project</h3>
-            <p class="card-tech">Python · ML · TBD</p>
-            <p class="card-desc">Reserved for an upcoming machine-learning project during BCA — details coming as I
-              level up my Python skills.</p>
+            <h3 class="card-title">Vault — Gym &amp; macro lab</h3>
+            <div class="card-img-wrap">
+              <img src="gym-app.png" alt="Gym App" class="card-img" loading="lazy">
+              <div class="card-img-overlay"></div>
+            </div>
+            <p class="card-tech">Three.js · JS · LocalStorage · Macro database</p>
+            <p class="card-desc">Training and nutrition workspace: procedural 3D muscle highlighting, Indian and international food macros, and a weekly planner — client-side only.</p>
             <div class="card-tag-row">
-              <span class="tag">Python</span>
-              <span class="tag">Machine Learning</span>
-              <span class="tag">BCA Semester</span>
+              <span class="tag">WebGL</span>
+              <span class="tag">Health UI</span>
+              <span class="tag">Product</span>
+            </div>
+            <div class="card-links">
+              <a href="gym-app/index.html" class="card-link roll-btn"><span
+                  class="roll-text" data-text="Open App →">Open App →</span></a>
             </div>
           </article>
         </div>
@@ -312,11 +341,19 @@
             </div>
           </div>
           <div class="skill-group">
-            <h4>Web</h4>
+            <h4>Web & UI</h4>
             <div class="skill-pills">
-              <span class="pill">HTML</span>
-              <span class="pill">CSS</span>
+              <span class="pill">Tailwind CSS</span>
+              <span class="pill">HTML / CSS</span>
               <span class="pill">Bootstrap</span>
+            </div>
+          </div>
+          <div class="skill-group">
+            <h4>Animation</h4>
+            <div class="skill-pills">
+              <span class="pill">GSAP</span>
+              <span class="pill">Lenis</span>
+              <span class="pill">Three.js</span>
             </div>
           </div>
           <div class="skill-group">
@@ -325,14 +362,6 @@
               <span class="pill">VS Code</span>
               <span class="pill">Git</span>
               <span class="pill">GitHub</span>
-            </div>
-          </div>
-          <div class="skill-group">
-            <h4>Learning</h4>
-            <div class="skill-pills">
-              <span class="pill muted">Three.js</span>
-              <span class="pill muted">WebGL</span>
-              <span class="pill muted">ML</span>
             </div>
           </div>
         </div>
@@ -363,9 +392,9 @@
     </section>
 
     <!-- FOOTER -->
-    <footer class="footer">
-      <p>Made with <span class="heart">❤</span> in Gurugram, India</p>
-      <a href="https://github.com/Alppoint/ActivePortfolioMain" target="_blank">View Source ↗</a>
+    <footer class="footer flex items-center justify-between px-[10vw] py-12 border-t border-[var(--glass-border)] max-md:flex-col max-md:gap-4 max-md:text-center">
+      <p class="font-mono text-xs tracking-[0.05em]">Made with <span class="heart text-ag-red">❤</span> in Gurugram, India</p>
+      <a href="https://github.com/Alppoint/ActivePortfolioMain" target="_blank" class="font-mono text-xs tracking-[0.1em] text-ag-cyan no-underline transition-all duration-300 hover:drop-shadow-[0_0_30px_rgba(0,255,195,0.5)]">View Source ↗</a>
     </footer>
 
   </main>

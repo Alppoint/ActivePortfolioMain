@@ -8,54 +8,81 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS v3 Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'exp-bg': '#080810',
+            'exp-surface': '#10101e',
+            'exp-accent': '#7c3aed',
+            'exp-accent2': '#a855f7',
+            'exp-border': 'rgba(255,255,255,0.07)',
+            'exp-glass': 'rgba(255,255,255,0.04)',
+            'exp-muted': '#6b6b85',
+            'exp-danger': '#ef4444',
+          },
+          fontFamily: {
+            'syne': ['Syne', 'sans-serif'],
+            'mono': ['Space Mono', 'monospace'],
+          },
+          borderRadius: {
+            'card': '14px',
+          },
+        },
+      },
+    }
+  </script>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="bg-exp-bg text-gray-200 font-syne min-h-screen overflow-x-hidden relative">
 
   <!-- NOISE LAYER -->
   <div class="noise"></div>
 
   <!-- BACK LINK -->
-  <a href="../index.html" class="back-link" id="backLink">
-    <span class="back-arrow">←</span>
+  <a href="../index.html" class="back-link fixed top-6 left-7 z-[100] flex items-center gap-2 font-mono text-xs text-exp-muted no-underline tracking-widest transition-colors duration-300 hover:text-gray-200" id="backLink">
+    <span class="back-arrow inline-block transition-transform duration-300">←</span>
     <span>Portfolio</span>
   </a>
 
   <!-- HEADER -->
-  <header class="app-header">
-    <div class="header-left">
-      <p class="app-eyebrow">Personal Finance — v1.0</p>
-      <h1 class="app-title">Expense<span class="accent"> Tracker</span></h1>
+  <header class="relative z-10 flex items-end justify-between flex-wrap gap-4 px-10 pt-20 pb-8 border-b border-exp-border">
+    <div>
+      <p class="font-mono text-[0.7rem] tracking-[0.15em] uppercase text-exp-muted mb-1.5">Personal Finance — v1.0</p>
+      <h1 class="font-syne text-[clamp(2rem,5vw,3.5rem)] font-extrabold leading-none -tracking-wide">Expense<span class="bg-gradient-to-r from-exp-accent to-exp-accent2 bg-clip-text text-transparent"> Tracker</span></h1>
     </div>
-    <div class="header-right">
-      <div class="total-bubble" id="totalBubble">
-        <span class="total-label">Total Spent</span>
-        <span class="total-amount" id="totalAmount">₹0.00</span>
+    <div class="flex items-center gap-4 flex-wrap">
+      <div class="total-bubble flex flex-col items-end py-3 px-5 border border-exp-border rounded-card bg-exp-glass backdrop-blur-xl" id="totalBubble">
+        <span class="font-mono text-[0.65rem] tracking-[0.1em] uppercase text-exp-muted">Total Spent</span>
+        <span class="font-mono text-2xl font-bold text-exp-accent2 transition-colors duration-300" id="totalAmount">₹0.00</span>
       </div>
-      <button class="btn-reset" id="btnReset" title="Clear all data">Reset All</button>
+      <button class="btn-reset font-mono text-[0.7rem] tracking-[0.08em] py-2 px-4 rounded-lg border border-red-500/35 bg-transparent text-red-500/70 cursor-pointer transition-all duration-300 hover:bg-red-500/10 hover:text-exp-danger hover:border-exp-danger" id="btnReset" title="Clear all data">Reset All</button>
     </div>
   </header>
 
-  <main class="app-main">
+  <main class="app-main relative z-[5] grid grid-cols-[340px_1fr] gap-6 px-10 pt-6 pb-12 max-w-[1400px] mx-auto max-md:grid-cols-1 max-md:px-5 max-md:pb-12">
 
     <!-- LEFT COLUMN: Form + Chart -->
-    <aside class="left-col">
+    <aside class="flex flex-col gap-6">
 
       <!-- ADD EXPENSE FORM -->
-      <section class="glass-card form-card">
-        <h2 class="card-heading">Add Expense</h2>
+      <section class="glass-card">
+        <h2 class="card-heading font-syne text-xs font-bold tracking-[0.12em] uppercase text-exp-muted mb-5">Add Expense</h2>
         <form id="expenseForm" autocomplete="off">
-          <div class="field-group">
-            <label for="expAmount">Amount (₹)</label>
-            <div class="input-wrap">
-              <span class="input-prefix">₹</span>
-              <input type="number" id="expAmount" placeholder="0.00" min="0.01" step="0.01" required>
+          <div class="mb-4">
+            <label for="expAmount" class="block font-mono text-[0.68rem] tracking-[0.1em] uppercase text-exp-muted mb-1.5">Amount (₹)</label>
+            <div class="input-wrap relative flex items-center">
+              <span class="absolute left-3 font-mono text-sm text-exp-accent2 pointer-events-none">₹</span>
+              <input type="number" id="expAmount" placeholder="0.00" min="0.01" step="0.01" required class="w-full bg-white/[0.04] border border-exp-border rounded-lg py-3 pr-3.5 pl-8 text-gray-200 font-mono text-sm outline-none transition-all duration-200 focus:border-exp-accent focus:shadow-[0_0_0_3px_rgba(124,58,237,0.35)]">
             </div>
           </div>
-          <div class="field-group">
-            <label for="expCategory">Category</label>
-            <div class="select-wrap">
-              <select id="expCategory" required>
+          <div class="mb-4">
+            <label for="expCategory" class="block font-mono text-[0.68rem] tracking-[0.1em] uppercase text-exp-muted mb-1.5">Category</label>
+            <div class="select-wrap relative">
+              <select id="expCategory" required class="w-full bg-white/[0.04] border border-exp-border rounded-lg py-3 px-3.5 pr-8 text-gray-200 font-mono text-sm outline-none appearance-none cursor-pointer transition-all duration-200 focus:border-exp-accent focus:shadow-[0_0_0_3px_rgba(124,58,237,0.35)]">
                 <option value="" disabled selected>Select category</option>
                 <option value="Food">🍔 Food</option>
                 <option value="Transport">🚌 Transport</option>
@@ -66,16 +93,16 @@
                 <option value="Bills">💡 Bills</option>
                 <option value="Other">📦 Other</option>
               </select>
-              <span class="select-arrow">▾</span>
+              <span class="absolute right-3 top-1/2 -translate-y-1/2 text-exp-muted pointer-events-none text-xs">▾</span>
             </div>
           </div>
-          <div class="field-group">
-            <label for="expDesc">Description</label>
-            <input type="text" id="expDesc" placeholder="e.g. Lunch at college canteen" maxlength="60">
+          <div class="mb-4">
+            <label for="expDesc" class="block font-mono text-[0.68rem] tracking-[0.1em] uppercase text-exp-muted mb-1.5">Description</label>
+            <input type="text" id="expDesc" placeholder="e.g. Lunch at college canteen" maxlength="60" class="w-full bg-white/[0.04] border border-exp-border rounded-lg py-3 px-3.5 text-gray-200 font-mono text-sm outline-none transition-all duration-200 focus:border-exp-accent focus:shadow-[0_0_0_3px_rgba(124,58,237,0.35)]">
           </div>
-          <div class="field-group">
-            <label for="expDate">Date</label>
-            <input type="date" id="expDate" required>
+          <div class="mb-4">
+            <label for="expDate" class="block font-mono text-[0.68rem] tracking-[0.1em] uppercase text-exp-muted mb-1.5">Date</label>
+            <input type="date" id="expDate" required class="w-full bg-white/[0.04] border border-exp-border rounded-lg py-3 px-3.5 text-gray-200 font-mono text-sm outline-none appearance-none transition-all duration-200 focus:border-exp-accent focus:shadow-[0_0_0_3px_rgba(124,58,237,0.35)]">
           </div>
           <button type="submit" class="btn-add" id="btnAdd">
             <span class="btn-add-text">Add Expense</span>
@@ -85,47 +112,47 @@
       </section>
 
       <!-- DONUT CHART -->
-      <section class="glass-card chart-card">
-        <h2 class="card-heading">Breakdown</h2>
-        <div class="chart-wrap">
+      <section class="glass-card">
+        <h2 class="card-heading font-syne text-xs font-bold tracking-[0.12em] uppercase text-exp-muted mb-5">Breakdown</h2>
+        <div class="chart-wrap relative flex justify-center items-center mb-5 h-56">
           <canvas id="donutCanvas" width="220" height="220"></canvas>
-          <div class="chart-center" id="chartCenter">
-            <span class="chart-center-label">Categories</span>
-            <span class="chart-center-val" id="chartCenterVal">—</span>
+          <div class="chart-center absolute flex flex-col items-center justify-center pointer-events-none z-[2]" id="chartCenter">
+            <span class="font-mono text-[0.6rem] tracking-[0.12em] uppercase text-exp-muted">Categories</span>
+            <span class="font-mono text-lg font-bold text-gray-200 mt-0.5 transition-all duration-300" id="chartCenterVal">—</span>
           </div>
         </div>
-        <ul class="legend" id="legend"></ul>
+        <ul class="legend list-none flex flex-col gap-2" id="legend"></ul>
       </section>
 
     </aside>
 
     <!-- RIGHT COLUMN: Stats + Transactions -->
-    <section class="right-col">
+    <section class="flex flex-col gap-5">
 
       <!-- STAT CARDS -->
-      <div class="stat-row">
-        <div class="stat-card glass-card">
-          <p class="stat-label">This Month</p>
-          <p class="stat-val" id="statMonth">₹0</p>
+      <div class="grid grid-cols-4 gap-4 max-sm:grid-cols-2">
+        <div class="glass-card text-center py-4 px-4">
+          <p class="font-mono text-[0.62rem] tracking-[0.12em] uppercase text-exp-muted mb-1.5">This Month</p>
+          <p class="stat-val font-mono text-xl font-bold text-gray-200 transition-colors duration-400" id="statMonth">₹0</p>
         </div>
-        <div class="stat-card glass-card">
-          <p class="stat-label">Avg / Day</p>
-          <p class="stat-val" id="statAvg">₹0</p>
+        <div class="glass-card text-center py-4 px-4">
+          <p class="font-mono text-[0.62rem] tracking-[0.12em] uppercase text-exp-muted mb-1.5">Avg / Day</p>
+          <p class="stat-val font-mono text-xl font-bold text-gray-200 transition-colors duration-400" id="statAvg">₹0</p>
         </div>
-        <div class="stat-card glass-card">
-          <p class="stat-label">Transactions</p>
-          <p class="stat-val" id="statCount">0</p>
+        <div class="glass-card text-center py-4 px-4">
+          <p class="font-mono text-[0.62rem] tracking-[0.12em] uppercase text-exp-muted mb-1.5">Transactions</p>
+          <p class="stat-val font-mono text-xl font-bold text-gray-200 transition-colors duration-400" id="statCount">0</p>
         </div>
-        <div class="stat-card glass-card">
-          <p class="stat-label">Top Category</p>
-          <p class="stat-val" id="statTop">—</p>
+        <div class="glass-card text-center py-4 px-4">
+          <p class="font-mono text-[0.62rem] tracking-[0.12em] uppercase text-exp-muted mb-1.5">Top Category</p>
+          <p class="stat-val font-mono text-xl font-bold text-gray-200 transition-colors duration-400" id="statTop">—</p>
         </div>
       </div>
 
       <!-- FILTER BAR -->
-      <div class="filter-bar glass-card">
-        <input type="text" id="searchInput" class="search-input" placeholder="Search expenses…">
-        <div class="filter-pills" id="filterPills">
+      <div class="glass-card flex flex-col gap-3.5 py-4 px-5">
+        <input type="text" id="searchInput" class="search-input w-full bg-white/[0.04] border border-exp-border rounded-lg py-2.5 px-3.5 text-gray-200 font-syne text-sm outline-none transition-all duration-200 focus:border-exp-accent focus:shadow-[0_0_0_3px_rgba(124,58,237,0.35)]" placeholder="Search expenses…">
+        <div class="flex flex-wrap gap-1.5" id="filterPills">
           <button class="fpill active" data-cat="All">All</button>
           <button class="fpill" data-cat="Food">Food</button>
           <button class="fpill" data-cat="Transport">Transport</button>
@@ -139,14 +166,14 @@
       </div>
 
       <!-- TRANSACTION LIST -->
-      <div class="txn-list glass-card" id="txnList">
-        <div class="txn-list-header">
-          <h2 class="card-heading" style="margin:0">Transactions</h2>
-          <span class="txn-count" id="txnCount">0 entries</span>
+      <div class="glass-card py-5 px-6" id="txnList">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="font-syne text-xs font-bold tracking-[0.12em] uppercase text-exp-muted !m-0">Transactions</h2>
+          <span class="font-mono text-[0.68rem] text-exp-muted tracking-[0.06em]" id="txnCount">0 entries</span>
         </div>
         <ul id="txnItems" class="txn-items"></ul>
-        <div class="empty-state" id="emptyState">
-          <p class="empty-icon">💸</p>
+        <div class="empty-state text-center py-10 px-4 text-exp-muted text-sm leading-relaxed" id="emptyState">
+          <p class="text-4xl mb-2">💸</p>
           <p>No expenses yet.<br>Add one above!</p>
         </div>
       </div>
@@ -160,11 +187,11 @@
 
   <!-- CONFIRM MODAL -->
   <div class="modal-overlay" id="modalOverlay">
-    <div class="modal glass-card">
-      <p class="modal-msg" id="modalMsg">Are you sure?</p>
-      <div class="modal-btns">
-        <button class="btn-ghost-small" id="modalCancel">Cancel</button>
-        <button class="btn-danger" id="modalConfirm">Delete</button>
+    <div class="modal glass-card max-w-xs w-[90%] text-center">
+      <p class="text-sm mb-6 text-gray-200" id="modalMsg">Are you sure?</p>
+      <div class="flex gap-3 justify-center">
+        <button class="font-mono text-xs py-2 px-5 border border-exp-border rounded-lg bg-transparent text-exp-muted cursor-pointer transition-all duration-200 hover:text-gray-200 hover:border-white/20" id="modalCancel">Cancel</button>
+        <button class="font-mono text-xs py-2 px-5 border border-red-500/40 rounded-lg bg-red-500/15 text-exp-danger cursor-pointer transition-all duration-200 hover:bg-red-500/30" id="modalConfirm">Delete</button>
       </div>
     </div>
   </div>

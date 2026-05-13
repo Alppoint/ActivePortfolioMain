@@ -5,19 +5,20 @@
 }
 
 :root {
-  --bg: #030305;
-  --bg2: #07070a;
-  --bg3: #0c0c12;
-  --text: #ffffff;
-  --text2: #999;
-  --text3: #555;
-  --cyan: #00ffc3;
-  --purple: #7a5cff;
-  --red: #ff4d6a;
-  --glass: rgba(255,255,255,0.04);
-  --glass-border: rgba(255,255,255,0.09);
-  --glow-c: 0 0 30px rgba(0,255,195,0.5);
-  --glow-p: 0 0 30px rgba(122,92,255,0.5);
+  --bg: #06060a;
+  --bg2: #0a0a10;
+  --bg3: #101018;
+  --text: #f4f4f5;
+  --text2: #a1a1aa;
+  --text3: #52525b;
+  --cyan: #5eead4;
+  --purple: #a78bfa;
+  --gold: #e8c547;
+  --red: #fb7185;
+  --glass: rgba(255,255,255,0.045);
+  --glass-border: rgba(255,255,255,0.1);
+  --glow-c: 0 0 36px rgba(94,234,212,0.35);
+  --glow-p: 0 0 36px rgba(167,139,250,0.35);
   --font-display: 'Syne', sans-serif;
   --font-mono: 'Space Mono', monospace;
 }

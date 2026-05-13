@@ -8,52 +8,67 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS v3 Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            'syne': ['Syne', 'sans-serif'],
+            'mono': ['Space Mono', 'monospace'],
+            'serif': ['Merriweather', 'serif'],
+          },
+        },
+      },
+    }
+  </script>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="h-full overflow-hidden font-syne transition-[background,color] duration-400">
 
   <div class="noise"></div>
 
   <!-- APP SHELL -->
-  <div class="app" id="app">
+  <div class="app relative z-[1] grid grid-cols-[280px_1fr] h-screen transition-[background] duration-400 max-md:grid-cols-1" id="app">
 
     <!-- ── SIDEBAR ── -->
-    <aside class="sidebar" id="sidebar">
+    <aside class="sidebar flex flex-col h-screen overflow-hidden transition-all duration-300" id="sidebar">
 
-      <div class="sidebar-head">
-        <a href="../index.html" class="back-link" title="Back to portfolio">
+      <div class="sidebar-head px-5 pt-5 pb-3 border-b border-[var(--border)] flex flex-col gap-3">
+        <a href="../index.html" class="back-link inline-flex items-center gap-1.5 font-mono text-[0.65rem] tracking-[0.1em] uppercase no-underline transition-colors duration-200" title="Back to portfolio">
           <span>←</span> Portfolio
         </a>
-        <div class="app-brand">
-          <span class="brand-icon">✦</span>
-          <span class="brand-name">Notes</span>
+        <div class="app-brand flex items-center gap-2">
+          <span class="brand-icon text-base">✦</span>
+          <span class="brand-name text-xl font-extrabold -tracking-wide">Notes</span>
         </div>
       </div>
 
       <!-- Search -->
-      <div class="search-wrap">
-        <span class="search-icon">⌕</span>
-        <input type="text" id="searchInput" class="search-input" placeholder="Search notes…">
-        <button class="search-clear" id="searchClear" title="Clear search">✕</button>
+      <div class="search-wrap relative px-4 pt-3 pb-2 flex items-center">
+        <span class="search-icon absolute left-[1.65rem] text-base pointer-events-none">⌕</span>
+        <input type="text" id="searchInput" class="search-input w-full rounded-lg py-2 pr-2 pl-[2.1rem] font-syne text-sm outline-none transition-all duration-200" placeholder="Search notes…">
+        <button class="search-clear absolute right-[1.4rem] bg-transparent border-none cursor-pointer text-[0.7rem] p-0.5 opacity-0 pointer-events-none transition-all duration-200" id="searchClear" title="Clear search">✕</button>
       </div>
 
       <!-- New Note Button -->
-      <button class="btn-new" id="btnNew">
+      <button class="btn-new mx-4 mt-1 mb-2" id="btnNew">
         <span>＋</span> New Note
       </button>
 
       <!-- Note List -->
-      <div class="note-list-wrap">
-        <ul class="note-list" id="noteList"></ul>
-        <div class="sidebar-empty" id="sidebarEmpty">
-          <p>📝</p><p>No notes yet</p>
+      <div class="note-list-wrap flex-1 overflow-y-auto px-2 pt-1">
+        <ul class="note-list list-none flex flex-col gap-1" id="noteList"></ul>
+        <div class="sidebar-empty text-center py-8 px-4 text-sm leading-relaxed" id="sidebarEmpty">
+          <p class="text-3xl">📝</p><p>No notes yet</p>
         </div>
       </div>
 
       <!-- Theme Switcher -->
-      <div class="theme-dock">
-        <p class="dock-label">Theme</p>
-        <div class="theme-swatches">
+      <div class="theme-dock px-5 pt-3 pb-4 border-t border-[var(--border)] transition-[border-color] duration-400">
+        <p class="dock-label font-mono text-[0.6rem] tracking-[0.12em] uppercase mb-2">Theme</p>
+        <div class="theme-swatches flex gap-2">
           <button class="swatch active" data-theme="midnight" title="Midnight" style="--sw:#7c3aed"></button>
           <button class="swatch" data-theme="aurora"   title="Aurora"   style="--sw:#10b981"></button>
           <button class="swatch" data-theme="ember"    title="Ember"    style="--sw:#f97316"></button>
@@ -65,27 +80,27 @@
     </aside>
 
     <!-- ── EDITOR ── -->
-    <main class="editor-pane" id="editorPane">
+    <main class="editor-pane flex flex-col h-screen overflow-hidden relative transition-[background] duration-400" id="editorPane">
 
       <!-- Mobile sidebar toggle -->
       <button class="mob-toggle" id="mobToggle" aria-label="Open note list">☰</button>
 
       <!-- Empty state -->
-      <div class="editor-empty" id="editorEmpty">
-        <p class="empty-icon">✦</p>
-        <p class="empty-title">Select or create a note</p>
-        <p class="empty-sub">Your thoughts, beautifully organised.</p>
-        <button class="btn-new-lg" id="btnNewLg">＋ Start writing</button>
+      <div class="editor-empty flex-1 flex flex-col items-center justify-center gap-2 text-center p-8" id="editorEmpty">
+        <p class="empty-icon text-4xl opacity-60">✦</p>
+        <p class="empty-title text-xl font-bold">Select or create a note</p>
+        <p class="empty-sub text-sm">Your thoughts, beautifully organised.</p>
+        <button class="btn-new-lg mt-3" id="btnNewLg">＋ Start writing</button>
       </div>
 
       <!-- Active editor -->
-      <div class="editor-inner" id="editorInner" style="display:none">
+      <div class="editor-inner flex flex-col h-screen" id="editorInner" style="display:none">
 
-        <div class="editor-topbar">
-          <div class="editor-meta" id="editorMeta">Last edited just now</div>
-          <div class="editor-actions">
+        <div class="editor-topbar flex items-center justify-between px-8 pt-4 pb-3 border-b border-[var(--border)] shrink-0 transition-[border-color] duration-400">
+          <div class="editor-meta font-mono text-[0.65rem] tracking-[0.06em]" id="editorMeta">Last edited just now</div>
+          <div class="editor-actions flex items-center gap-2">
             <!-- Color tag -->
-            <div class="color-picker" id="colorPicker">
+            <div class="color-picker relative" id="colorPicker">
               <button class="color-trigger" id="colorTrigger" title="Note colour">
                 <span class="color-dot" id="colorDot"></span>
               </button>
@@ -107,7 +122,7 @@
 
         <input type="text" id="noteTitle" class="note-title-input" placeholder="Untitled note…" spellcheck="false">
 
-        <div class="word-count-bar">
+        <div class="word-count-bar flex gap-4 px-8 pb-3 font-mono text-[0.62rem] tracking-[0.06em] border-b border-[var(--border)] shrink-0 transition-[border-color,color] duration-400">
           <span id="wordCount">0 words</span>
           <span id="charCount">0 chars</span>
         </div>
@@ -125,8 +140,8 @@
   <!-- DELETE MODAL -->
   <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
-      <p class="modal-msg">Delete this note permanently?</p>
-      <div class="modal-btns">
+      <p class="modal-msg text-sm mb-6">Delete this note permanently?</p>
+      <div class="modal-btns flex gap-2.5 justify-center">
         <button class="mbtn ghost" id="modalCancel">Cancel</button>
         <button class="mbtn danger" id="modalConfirm">Delete</button>
       </div>

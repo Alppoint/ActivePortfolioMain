@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gym Vault — Ultimate Workout & Nutrition Tracker</title>
+    <meta name="description" content="Gym Vault is a high-end fitness platform for tracking workouts, nutrition, and body progress with advanced interactive analytics.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 3D Background Canvas -->
+    <canvas id="heroCanvas" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; opacity: 0.6;"></canvas>
+
+    <!-- ═══ SIDEBAR ═══ -->
+    <aside class="sidebar">
+        <div class="sidebar-logo" style="cursor:pointer;" onclick="switchTab('dashboard')">
+            <div class="logo-icon"><i class="fa-solid fa-dumbbell"></i></div>
+            <span class="logo-text">Gym Vault</span>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-label">Main</div>
+            <a class="nav-link active" data-tab="dashboard"><i class="fa-solid fa-house-chimney"></i> <span>Home</span></a>
+            <a class="nav-link" data-tab="programs"><i class="fa-solid fa-layer-group"></i> <span>Programs</span></a>
+            <a class="nav-link" data-tab="workout"><i class="fa-solid fa-calendar-plus"></i> <span>Workout</span></a>
+            <div class="nav-label">Database</div>
+            <a class="nav-link" data-tab="exercises"><i class="fa-solid fa-book-open"></i> <span>Library</span></a>
+            <a class="nav-link" data-tab="nutrition"><i class="fa-solid fa-utensils"></i> <span>Nutrition</span></a>
+            <a class="nav-link" data-tab="history"><i class="fa-solid fa-clock-rotate-left"></i> <span>History</span></a>
+        </nav>
+        <div class="sidebar-bottom">
+            <div class="nav-label">Status</div>
+            <div class="sidebar-card" style="cursor:pointer;" onclick="switchTab('ai-coach')">
+                <p>AI Coach</p>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <small>Ready for your next PR?</small>
+                    <div class="coach-pulse"></div>
+                </div>
+                <div id="live-clock" style="font-size:10px; color:var(--accent); margin-top:4px; font-weight:800;">00:00</div>
+            </div>
+            <div class="sidebar-user" onclick="switchTab('settings')" style="position:relative;">
+                <div class="user-avatar-container">
+                    <img src="https://ui-avatars.com/api/?name=User&background=6c5ce7&color=fff" alt="User" id="user-avatar">
+                    <div class="tier-glow" id="tier-glow"></div>
+                </div>
+                <div style="flex:1;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span class="sidebar-user-name">User Profile</span>
+                        <span class="member-badge" id="member-tier">Rookie</span>
+                    </div>
+                    <div class="member-progress-container">
+                        <div class="member-progress-bar" id="member-progress" style="width: 20%;"></div>
+                    </div>
+                    <span class="sidebar-user-role" id="member-sub">Free Member</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ═══ MAIN ═══ -->
+    <main class="main-content">
+
+        <!-- ──── Dashboard ──── -->
+        <div id="dashboard-tab" class="tab-panel active">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title scramble">Welcome Back, <span id="user-name-display">Athlete</span></h1>
+                    <p class="page-subtitle">Your performance index is up 12% this week.</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-chip" onclick="exportData()"><i class="fa-solid fa-download"></i> Export Data</button>
+                    <div class="kbd-hint">Ctrl+N for New Workout</div>
+                </div>
+            </div>
+
+            <!-- Stat Cards -->
+            <div class="stat-cards">
+                <div class="stat-card card-3d anim-stagger" onclick="switchTab('history')">
+                    <div class="stat-card-icon" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe)"><i class="fa-solid fa-fire-flame-curved"></i></div>
+                    <div><span class="stat-card-value" id="stat-workouts">0</span><span class="stat-card-label">Workouts</span></div>
+                    <span class="stat-card-badge positive">+48%</span>
+                </div>
+                <div class="stat-card card-3d anim-stagger" onclick="switchTab('history')">
+                    <div class="stat-card-icon" style="background:linear-gradient(135deg,#00b894,#55efc4)"><i class="fa-solid fa-weight-hanging"></i></div>
+                    <div><span class="stat-card-value" id="stat-volume">0.0t</span><span class="stat-card-label">Volume</span></div>
+                    <span class="stat-card-badge positive">+11%</span>
+                </div>
+                <div class="stat-card card-3d anim-stagger" onclick="switchTab('history')">
+                    <div class="stat-card-icon" style="background:linear-gradient(135deg,#e17055,#fab1a0)"><i class="fa-solid fa-arrow-up-right-dots"></i></div>
+                    <div><span class="stat-card-value" id="stat-reps">0</span><span class="stat-card-label">Total Reps</span></div>
+                    <span class="stat-card-badge positive">+7%</span>
+                </div>
+                <div class="stat-card card-3d anim-stagger" onclick="switchTab('workout')">
+                    <div class="stat-card-icon" style="background:linear-gradient(135deg,#fdcb6e,#ffeaa7)"><i class="fa-solid fa-clock"></i></div>
+                    <div><span class="stat-card-value" id="stat-time">Start</span><span class="stat-card-label">Time</span></div>
+                    <span class="stat-card-badge negative">-31%</span>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card chart-card anim-stagger">
+                    <div class="card-header">
+                        <h3>Performance Index</h3>
+                        <div class="chart-legend">
+                            <span><i class="fa-solid fa-circle" style="color:var(--accent)"></i> Intensity</span>
+                            <span><i class="fa-solid fa-circle" style="color:var(--text-dim)"></i> Volume</span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="progressChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card anim-stagger">
+                    <div class="card-header">
+                        <h3>Weekly Activity</h3>
+                        <div class="streak-info"><i class="fa-solid fa-fire" style="color:var(--coral)"></i> <strong id="streak-val">0</strong> day streak</div>
+                    </div>
+                    <div style="height: 180px; margin-top: 10px;">
+                        <canvas id="weeklyActivityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Personal Records + Goals row -->
+            <div class="dashboard-grid" style="margin-top:20px;">
+                <div class="card anim-stagger glow-border">
+                    <div class="card-header"><h3>Personal Records</h3></div>
+                    <div class="pr-list" id="pr-list">
+                        <!-- JS -->
+                    </div>
+                </div>
+                    
+                <div class="card anim-stagger">
+                    <div class="card-header">
+                        <h3>1RM Predictor</h3>
+                        <span class="stat-card-badge">Skill Test</span>
+                    </div>
+                    <div class="orm-calc-mini" style="margin-top:10px;">
+                        <div class="orm-inputs" style="display:flex; gap:8px;">
+                            <div class="orm-field" style="flex:1;"><label style="font-size:10px; color:var(--text-dim); text-transform:uppercase; font-weight:700;">Weight</label><input type="number" id="orm-w" value="100" oninput="updateORM()" style="width:100%; background:rgba(255,255,255,0.05); border:1px solid var(--border); padding:8px; border-radius:8px; color:#fff;"></div>
+                            <div class="orm-field" style="flex:1;"><label style="font-size:10px; color:var(--text-dim); text-transform:uppercase; font-weight:700;">Reps</label><input type="number" id="orm-r" value="5" oninput="updateORM()" style="width:100%; background:rgba(255,255,255,0.05); border:1px solid var(--border); padding:8px; border-radius:8px; color:#fff;"></div>
+                        </div>
+                        <div class="orm-result" id="orm-res" style="margin-top:12px; background:var(--accent); color:#fff; padding:12px; border-radius:10px; text-align:center; font-weight:900; font-size:20px;">116kg</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid" style="margin-top:20px; grid-template-columns: 1.2fr 1fr;">
+                <div class="card anim-stagger">
+                    <div class="card-header"><h3>Daily Goals</h3></div>
+                    <div class="goals-row">
+                        <div class="goal-item">
+                            <div class="goal-ring" data-pct="75"><svg viewBox="0 0 70 70"><circle cx="35" cy="35" r="30" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="6"></circle><circle cx="35" cy="35" r="30" class="progress" fill="none" stroke="var(--accent)" stroke-width="6" stroke-dasharray="141 188" stroke-linecap="round" transform="rotate(-90 35 35)"></circle></svg><span>75%</span></div>
+                            <p>Protein</p>
+                        </div>
+                        <div class="goal-item">
+                            <div class="goal-ring" data-pct="45"><svg viewBox="0 0 70 70"><circle cx="35" cy="35" r="30" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="6"></circle><circle cx="35" cy="35" r="30" class="progress" fill="none" stroke="var(--yellow)" stroke-width="6" stroke-dasharray="84 188" stroke-linecap="round" transform="rotate(-90 35 35)"></circle></svg><span>45%</span></div>
+                            <p>Calories</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card anim-stagger">
+                    <div class="card-header"><h3>Bodyweight</h3><span class="stat-card-badge positive">Trending Down</span></div>
+                    <div style="padding:10px 0;">
+                        <span style="font-size:28px; font-weight:900; font-family:'Outfit',sans-serif;">81.5<small style="font-size:14px; color:var(--text-dim); margin-left:4px;">kg</small></span>
+                    </div>
+                    <div style="height:60px; margin-top:10px;">
+                        <canvas id="bwChartSmall"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ──── Programs ──── -->
+        <section id="programs" class="tab-panel">
+            <div class="page-header"><div><h1 class="page-title">Programs</h1><p class="page-subtitle">Training routines for every level</p></div></div>
+            <div class="filter-bar" id="programs-filters">
+                <button class="filter-pill active" data-filter="All">All</button>
+                <button class="filter-pill" data-filter="Beginner">Beginner</button>
+                <button class="filter-pill" data-filter="Intermediate">Intermediate</button>
+                <button class="filter-pill" data-filter="Advanced">Advanced</button>
+                <button class="filter-pill" data-filter="Strength">Strength</button>
+                <button class="filter-pill" data-filter="Hypertrophy">Hypertrophy</button>
+            </div>
+            <div class="programs-grid" id="programs-list"></div>
+        </section>
+
+        <!-- ──── Workout ──── -->
+        <section id="workout" class="tab-panel">
+            <div class="page-header"><div><h1 class="page-title">Workout</h1><p class="page-subtitle">Start or continue your training</p></div></div>
+
+            <!-- Quick Start -->
+            <div class="workout-quickstart" id="workout-quickstart">
+                <div class="quickstart-card card-3d" onclick="startEmptyWorkout()">
+                    <div class="quickstart-icon" style="background:linear-gradient(135deg,#6c5ce7,#a29bfe)"><i class="fa-solid fa-plus"></i></div>
+                    <h4>Empty Workout</h4><p>Start from scratch</p>
+                </div>
+                <div class="quickstart-card card-3d" onclick="repeatLastWorkout()">
+                    <div class="quickstart-icon" style="background:linear-gradient(135deg,#e17055,#fab1a0)"><i class="fa-solid fa-rotate-left"></i></div>
+                    <h4>Repeat Last</h4><p>Previous Session</p>
+                </div>
+                <div class="quickstart-card card-3d" onclick="startProgramWorkout()">
+                    <div class="quickstart-icon" style="background:linear-gradient(135deg,#00b894,#55efc4)"><i class="fa-solid fa-calendar-check"></i></div>
+                    <h4>Today's Plan</h4><p>From Active Program</p>
+                </div>
+            </div>
+
+            <!-- Active Workout -->
+            <div id="active-workout-area" class="hidden">
+                <div class="workout-active-header">
+                    <div class="workout-active-info">
+                        <h2 id="workout-title">Free Workout</h2>
+                        <span class="workout-timer" id="workout-timer">00:00</span>
+                    </div>
+                    <div class="workout-active-actions">
+                        <button class="btn-sm btn-outline" onclick="cancelWorkout()"><i class="fa-solid fa-xmark"></i> Cancel</button>
+                        <button class="btn-sm btn-green" onclick="finishWorkout()"><i class="fa-solid fa-check"></i> Finish</button>
+                    </div>
+                </div>
+
+                <div id="workout-exercises-container"></div>
+
+                <div class="workout-bottom-actions">
+                    <button class="btn-workout btn-workout-add" onclick="openExerciseSelector()"><i class="fa-solid fa-plus"></i> Add Exercise</button>
+                </div>
+
+                <!-- Rest Timer -->
+                <div class="rest-timer-bar" id="rest-timer-bar">
+                    <button class="rest-btn" onclick="adjustRest(-15)"><i class="fa-solid fa-minus"></i></button>
+                    <div class="rest-display">
+                        <span id="rest-time-display">01:30</span>
+                        <small>Rest Timer</small>
+                    </div>
+                    <button class="rest-btn" onclick="adjustRest(15)"><i class="fa-solid fa-plus"></i></button>
+                    <button class="rest-play-btn" id="rest-play-btn" onclick="toggleRestTimer()"><i class="fa-solid fa-play"></i></button>
+                </div>
+
+                <!-- Summary -->
+                <div class="workout-summary-bar">
+                    <div class="summary-figure" id="workout-muscle-preview"></div>
+                    <div class="summary-stats">
+                        <div><small>Volume</small><strong><span id="sum-weight">0</span> <small>kg</small></strong></div>
+                        <div><small>Sets</small><strong id="sum-sets">0</strong></div>
+                        <div><small>Reps</small><strong id="sum-reps">0</strong></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Workouts -->
+            <div class="section-block" id="recent-section">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+                    <h3 class="section-title" style="margin:0;">Recent History</h3>
+                    <button class="btn-sm btn-outline" style="padding:4px 10px; font-size:10px;" onclick="clearHistory()">Clear All</button>
+                </div>
+                <div class="history-list" id="workout-history-list">
+                    <div class="food-log-empty"><i class="fa-solid fa-clock-rotate-left"></i><p>No workouts recorded yet.</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ──── Exercises ──── -->
+        <section id="exercises" class="tab-panel">
+            <div class="page-header">
+                <div><h1 class="page-title">Exercises</h1><p class="page-subtitle">Browse the full library</p></div>
+                <div class="search-box"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="ex-search" placeholder="Search exercises..."></div>
+            </div>
+            <div class="filter-bar" id="exercises-filters">
+                <button class="filter-pill active" data-filter="All">All</button>
+                <button class="filter-pill" data-filter="Chest">Chest</button><button class="filter-pill" data-filter="Back">Back</button>
+                <button class="filter-pill" data-filter="Legs">Legs</button><button class="filter-pill" data-filter="Shoulders">Shoulders</button>
+                <button class="filter-pill" data-filter="Arms">Arms</button><button class="filter-pill" data-filter="Core">Core</button>
+                <button class="filter-pill" data-filter="Cardio">Cardio</button>
+            </div>
+            <div class="exercises-list" id="exercise-list-container"></div>
+        </section>
+
+        <!-- ──── Nutrition ──── -->
+        <section id="nutrition" class="tab-panel">
+            <div class="page-header">
+                <div><h1 class="page-title">Nutrition</h1><p class="page-subtitle">Track your daily intake</p></div>
+                <button class="btn-chip" onclick="openFoodSelector()"><i class="fa-solid fa-plus"></i> Add Food</button>
+            </div>
+
+            <!-- Macro Rings -->
+            <div class="macro-overview">
+                <div class="macro-ring-card card-3d">
+                    <div class="macro-ring cal-ring"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8"/><circle cx="50" cy="50" r="42" fill="none" stroke="#6c5ce7" stroke-width="8" stroke-dasharray="0 264" stroke-linecap="round" transform="rotate(-90 50 50)" id="cal-ring-progress"/></svg><div class="macro-ring-inner"><span id="cal-consumed">0</span><small>/ 2500 kcal</small></div></div>
+                    <p class="macro-ring-label">Calories</p>
+                </div>
+                <div class="macro-bar-card card-3d">
+                    <div class="macro-bar-item"><div class="macro-bar-header"><span>Protein</span><span id="protein-val">0g</span><small>/ 180g</small></div><div class="macro-bar"><div class="macro-bar-fill protein-fill" id="protein-bar" style="width:0%"></div></div></div>
+                    <div class="macro-bar-item"><div class="macro-bar-header"><span>Carbs</span><span id="carbs-val">0g</span><small>/ 300g</small></div><div class="macro-bar"><div class="macro-bar-fill carbs-fill" id="carbs-bar" style="width:0%"></div></div></div>
+                    <div class="macro-bar-item"><div class="macro-bar-header"><span>Fats</span><span id="fats-val">0g</span><small>/ 80g</small></div><div class="macro-bar"><div class="macro-bar-fill fats-fill" id="fats-bar" style="width:0%"></div></div></div>
+                </div>
+            </div>
+
+            <!-- Diet Planners & Water -->
+            <div class="dashboard-grid" style="margin-bottom:24px;">
+                <div class="card anim-stagger glow-border">
+                    <div class="card-header"><h3>Diet Planners <span class="stat-card-badge">Auto-set Macros</span></h3></div>
+                    <div class="diet-planners-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:10px;">
+                        <div class="diet-card" onclick="applyDietPlan('bulk')">
+                            <i class="fa-solid fa-bowl-rice"></i>
+                            <p>Desi Bulk</p>
+                        </div>
+                        <div class="diet-card" onclick="applyDietPlan('cut')">
+                            <i class="fa-solid fa-leaf"></i>
+                            <p>Lean Cut</p>
+                        </div>
+                        <div class="diet-card" onclick="applyDietPlan('keto')">
+                            <i class="fa-solid fa-bacon"></i>
+                            <p>Keto</p>
+                        </div>
+                        <div class="diet-card" onclick="applyDietPlan('balanced')">
+                            <i class="fa-solid fa-scale-balanced"></i>
+                            <p>Balanced</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card anim-stagger">
+                    <div class="card-header"><h3>Water Tracker</h3><span class="stat-card-badge positive">Hydration</span></div>
+                    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; margin-top:10px; height:100%;">
+                        <div class="water-bottle">
+                            <div class="water-level" id="water-level" style="height: 0%;"></div>
+                            <span id="water-text">0 / 8</span>
+                        </div>
+                        <button class="btn-sm btn-outline" onclick="addWater()" style="width:100%; justify-content:center;"><i class="fa-solid fa-plus"></i> 1 Glass (250ml)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Food Log -->
+            <div class="section-block">
+                <h3 class="section-title">Today's Log</h3>
+                <div id="food-log" class="food-log">
+            <div class="food-log-empty"><i class="fa-solid fa-utensils"></i><p>No food logged yet today.</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- History Tab -->
+        <div id="history-tab" class="tab-panel">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Workout History</h1>
+                    <p class="page-subtitle">Reflect on your progress and previous sessions.</p>
+                </div>
+                <button class="btn-chip" onclick="clearHistory()"><i class="fa-solid fa-trash"></i> Clear All</button>
+            </div>
+            
+            <div class="card anim-stagger glow-border" style="margin-bottom:24px;">
+                <div class="card-header"><h3>Volume Progression</h3></div>
+                <div style="height:200px;">
+                    <canvas id="historyVolumeChart"></canvas>
+                </div>
+            </div>
+
+            <div class="history-list" id="history-list-full">
+                <!-- Filled by JS -->
+            </div>
+        </div>
+
+        <!-- AI Coach Tab -->
+        <div id="ai-coach-tab" class="tab-panel">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">AI Coach</h1>
+                    <p class="page-subtitle">Your personalized fitness intelligence.</p>
+                </div>
+            </div>
+            
+            <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:80px 20px; text-align:center;">
+                <div style="width:120px; height:120px; background:rgba(108,92,231,0.1); border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:32px; border:2px solid var(--accent);">
+                    <i class="fa-solid fa-robot" style="font-size:48px; color:var(--accent);"></i>
+                </div>
+                <h2 style="font-size:24px; font-weight:800; margin-bottom:12px;">Under Construction</h2>
+                <p style="color:var(--text-dim); max-width:400px; line-height:1.6; font-size:14px;">
+                    We're training our neural networks to analyze your volume data and provide personalized training blocks. This feature will be available in the next Pro update.
+                </p>
+                <button class="btn-sm btn-green" style="margin-top:32px; padding: 12px 24px;" onclick="switchTab('dashboard')">Back to Dashboard</button>
+            </div>
+        </div>
+
+        <!-- ──── Settings ──── -->
+        <section id="settings" class="tab-panel">
+            <div class="page-header"><div><h1 class="page-title">Settings</h1><p class="page-subtitle">Preferences & profile</p></div></div>
+            <div class="dashboard-grid">
+                <div class="card anim-stagger glow-border">
+                    <div style="display:flex;align-items:center;gap:16px;margin-bottom:28px;">
+                        <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#6c5ce7,#a29bfe);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;">AK</div>
+                        <div><p style="font-weight:700;font-size:15px;">Athlete</p><p style="font-size:12px;color:#a29bfe;">Pro Member</p></div>
+                    </div>
+                    
+                    <div class="settings-row">
+                        <span>Unit System</span>
+                        <div style="display:flex; gap:8px;">
+                            <button class="filter-pill active unit-btn" onclick="setUnit('metric')">Metric (kg)</button>
+                            <button class="filter-pill unit-btn" onclick="setUnit('imperial')">Imperial (lb)</button>
+                        </div>
+                    </div>
+
+                    <div class="settings-row">
+                        <span>Theme Preference</span>
+                        <div class="theme-swatches">
+                            <div class="theme-swatch active" style="background:#0b0d12;" onclick="setTheme('default', this)" title="Vault Dark"></div>
+                            <div class="theme-swatch" style="background:#0a0e1a;" onclick="setTheme('midnight', this)" title="Midnight Blue"></div>
+                            <div class="theme-swatch" style="background:#000;" onclick="setTheme('amoled', this)" title="AMOLED Black"></div>
+                        </div>
+                    </div>
+
+                    <div class="settings-row">
+                        <span>Sound Effects</span>
+                        <label class="settings-toggle">
+                            <input type="checkbox" id="setting-sound" checked>
+                            <span class="settings-toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="settings-row">
+                        <span>Browser Notifications</span>
+                        <label class="settings-toggle">
+                            <input type="checkbox" id="setting-notify" onchange="requestNotifyPermission()">
+                            <span class="settings-toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="settings-row" style="border:none; margin-top:10px;">
+                        <span>Cloud Export</span>
+                        <button class="btn-sm btn-outline" onclick="exportToCSV()"><i class="fa-solid fa-file-csv"></i> Export CSV</button>
+                    </div>
+                </div>
+
+                <div class="card anim-stagger glow-border">
+                    <div class="card-header"><h3>Macro Targets</h3></div>
+                    <div class="settings-macro-inputs">
+                        <div class="settings-macro-field">
+                            <label>Daily Calories</label>
+                            <input type="number" id="target-cal" value="2500" onchange="saveMacroTargets()">
+                        </div>
+                        <div class="settings-macro-field">
+                            <label>Protein (g)</label>
+                            <input type="number" id="target-pro" value="180" onchange="saveMacroTargets()">
+                        </div>
+                        <div class="settings-macro-field">
+                            <label>Carbs (g)</label>
+                            <input type="number" id="target-carb" value="300" onchange="saveMacroTargets()">
+                        </div>
+                        <div class="settings-macro-field">
+                            <label>Fats (g)</label>
+                            <input type="number" id="target-fat" value="80" onchange="saveMacroTargets()">
+                        </div>
+                    </div>
+                    <div style="margin-top:20px; font-size:11px; color:var(--text-dim); line-height:1.5;">
+                        <i class="fa-solid fa-circle-info"></i> Targets update your nutrition rings in real-time.
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ═══ EXERCISE SELECTOR MODAL ═══ -->
+    <div class="modal-overlay" id="exercise-selector-modal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <button class="btn-icon" onclick="closeExerciseSelector()"><i class="fa-solid fa-arrow-left"></i></button>
+                <input type="text" id="modal-ex-search" placeholder="Search exercise...">
+            </div>
+            <div class="modal-body" id="modal-exercises-list"></div>
+        </div>
+    </div>
+
+    <!-- ═══ FOOD SELECTOR MODAL ═══ -->
+    <div class="modal-overlay" id="food-selector-modal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <button class="btn-icon" onclick="closeFoodSelector()"><i class="fa-solid fa-arrow-left"></i></button>
+                <input type="text" id="modal-food-search" placeholder="Search food...">
+            </div>
+            <div class="modal-body" id="modal-food-list"></div>
+        </div>
+    </div>
+
+    <!-- ═══ EXERCISE DETAIL MODAL ═══ -->
+    <div class="modal-overlay" id="exercise-detail-modal">
+        <div class="modal-box" style="max-width:520px;">
+            <div class="modal-header">
+                <button class="btn-icon" onclick="closeExDetail()"><i class="fa-solid fa-xmark"></i></button>
+                <h3 id="exd-title" style="flex:1;font-weight:700;font-size:15px;">Exercise</h3>
+            </div>
+            <div class="modal-body" style="padding:20px;">
+                <div style="display:flex;gap:20px;align-items:flex-start;">
+                    <div id="exd-figure" style="width:80px;flex-shrink:0;"></div>
+                    <div style="flex:1;">
+                        <div class="exd-meta"><span class="exercise-cat-tag" id="exd-cat"></span><span class="exercise-cat-tag" id="exd-equip" style="background:rgba(0,184,148,0.1);color:#55efc4;"></span></div>
+                        <h4 style="font-size:13px;color:var(--muted);margin:14px 0 8px;">Muscles Worked</h4>
+                        <div id="exd-muscles" class="exd-muscles"></div>
+                        <h4 style="font-size:13px;color:var(--muted);margin:14px 0 8px;">Instructions</h4>
+                        <ol id="exd-instructions" class="exd-instructions"></ol>
+                    </div>
+                </div>
+                <button class="btn-workout btn-workout-add" style="margin-top:20px;" onclick="addFromDetail()"><i class="fa-solid fa-plus"></i> Add to Workout</button>
+            </div>
+        </div>
+    </div>
+    <!-- ═══ PROGRAM DETAIL MODAL ═══ -->
+    <div class="modal-overlay" id="program-detail-modal">
+        <div class="modal-box" style="max-width:560px;">
+            <div class="modal-header">
+                <button class="btn-icon" onclick="closeProgramDetail()"><i class="fa-solid fa-xmark"></i></button>
+                <div style="flex:1;">
+                    <h3 id="prog-title" style="font-weight:700;font-size:16px;">Program Name</h3>
+                    <p id="prog-meta" style="font-size:11px;color:var(--muted);"></p>
+                </div>
+            </div>
+            <div class="modal-body" style="padding:20px;">
+                <div id="prog-split-container"></div>
+                <button class="btn-workout btn-workout-add" style="margin-top:20px;" onclick="startProgramWorkout()"><i class="fa-solid fa-play"></i> Start Today's Session</button>
+            </div>
+        </div>
+    </div>
+    <!-- ═══ TOAST ═══ -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- ═══ SCRIPTS ═══ -->
+    <script src="data.js"></script>
+    <script src="3d-background.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

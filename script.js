@@ -22,109 +22,157 @@ if (typeof gsap !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-// three.js background - draws the floating particle dots
+// three.js hero: particles + wireframe primitives (stable motion, debounced resize)
 (function initThreeJS() {
   const canvas = document.getElementById('heroCanvas');
   if (!canvas || typeof THREE === 'undefined') return;
 
   const scene = new THREE.Scene();
-  // fog makes the particles fade to black in the distance
+  scene.fog = new THREE.FogExp2(0x06060a, 0.00165);
 
   const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
   camera.position.z = 200;
 
-  const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+  const renderer = new THREE.WebGLRenderer({
+    canvas,
+    alpha: true,
+    antialias: true,
+    powerPreference: 'high-performance',
+  });
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-  // create 2000 particles with random positions and colors
-  const geometry = new THREE.BufferGeometry();
+  const wireShared = {
+    wireframe: true,
+    transparent: true,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+  };
+
+  function wireMesh(geom, hex, opacity, pos, rot) {
+    const mat = new THREE.MeshBasicMaterial({ color: hex, opacity, ...wireShared });
+    const mesh = new THREE.Mesh(geom, mat);
+    mesh.position.copy(pos);
+    if (rot) mesh.rotation.set(rot.x || 0, rot.y || 0, rot.z || 0);
+    scene.add(mesh);
+    return mesh;
+  }
+
+  const torus = wireMesh(new THREE.TorusGeometry(120, 4, 12, 64), 0x5eead4, 0.12, new THREE.Vector3(80, 40, -40));
+  const ico = wireMesh(new THREE.IcosahedronGeometry(55, 1), 0x5eead4, 0.1, new THREE.Vector3(-100, -30, 20));
+  const ring = wireMesh(
+    new THREE.TorusGeometry(90, 2, 8, 48),
+    0xa78bfa,
+    0.09,
+    new THREE.Vector3(40, 90, -80),
+    { x: Math.PI / 2.2 }
+  );
+  const oct = wireMesh(new THREE.OctahedronGeometry(44, 0), 0xe8c547, 0.085, new THREE.Vector3(-52, 72, -28));
+  const dodec = wireMesh(new THREE.DodecahedronGeometry(40, 0), 0xa78bfa, 0.075, new THREE.Vector3(128, -48, -24));
+  const box = wireMesh(
+    new THREE.BoxGeometry(62, 62, 62),
+    0x5eead4,
+    0.055,
+    new THREE.Vector3(-128, 52, -58),
+    { x: 0.35, y: 0.65, z: 0.2 }
+  );
+  const knot = wireMesh(new THREE.TorusKnotGeometry(38, 9, 96, 12), 0x7dd3c0, 0.06, new THREE.Vector3(95, -65, 10));
+
   const particlesCount = 2000;
+  const geometry = new THREE.BufferGeometry();
   const posArray = new Float32Array(particlesCount * 3);
+  const baseY = new Float32Array(particlesCount);
   const colorArray = new Float32Array(particlesCount * 3);
+  const colorCyan = new THREE.Color('#5eead4');
+  const colorPurple = new THREE.Color('#a78bfa');
 
-  const colorCyan = new THREE.Color('#00ffc3');
-  const colorPurple = new THREE.Color('#7a5cff');
-
-  for(let i = 0; i < particlesCount * 3; i+=3) {
-      posArray[i] = (Math.random() - 0.5) * 600;      // x
-      posArray[i+1] = (Math.random() - 0.5) * 600;    // y
-      posArray[i+2] = (Math.random() - 0.5) * 400;    // z
-
-      // mix cyan and purple randomly for each particle
-      const mixedColor = colorCyan.clone().lerp(colorPurple, Math.random());
-      colorArray[i] = mixedColor.r;
-      colorArray[i+1] = mixedColor.g;
-      colorArray[i+2] = mixedColor.b;
+  for (let i = 0; i < particlesCount; i++) {
+    const i3 = i * 3;
+    posArray[i3] = (Math.random() - 0.5) * 600;
+    const y0 = (Math.random() - 0.5) * 600;
+    posArray[i3 + 1] = y0;
+    baseY[i] = y0;
+    posArray[i3 + 2] = (Math.random() - 0.5) * 400;
+    const mixedColor = colorCyan.clone().lerp(colorPurple, Math.random());
+    colorArray[i3] = mixedColor.r;
+    colorArray[i3 + 1] = mixedColor.g;
+    colorArray[i3 + 2] = mixedColor.b;
   }
 
   geometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
   geometry.setAttribute('color', new THREE.BufferAttribute(colorArray, 3));
 
   const material = new THREE.PointsMaterial({
-      size: 1.5,
-      vertexColors: true,
-      blending: THREE.AdditiveBlending,
-      transparent: true,
-      opacity: 0.8
+    size: 1.65,
+    vertexColors: true,
+    blending: THREE.AdditiveBlending,
+    transparent: true,
+    opacity: 0.82,
+    depthWrite: false,
   });
 
   const particlesMesh = new THREE.Points(geometry, material);
   scene.add(particlesMesh);
 
-  // track mouse position so particles react to it
   let mouseX = 0;
   let mouseY = 0;
-  let targetX = 0;
-  let targetY = 0;
+  document.addEventListener(
+    'mousemove',
+    (e) => {
+      mouseX = e.clientX - window.innerWidth * 0.5;
+      mouseY = e.clientY - window.innerHeight * 0.5;
+    },
+    { passive: true }
+  );
 
-  const windowHalfX = window.innerWidth / 2;
-  const windowHalfY = window.innerHeight / 2;
-
-  document.addEventListener('mousemove', (event) => {
-      mouseX = (event.clientX - windowHalfX);
-      mouseY = (event.clientY - windowHalfY);
-  });
-
-  // animation loop - runs every frame
   const clock = new THREE.Clock();
 
   function animate() {
-      requestAnimationFrame(animate);
-      const elapsedTime = clock.getElapsedTime();
+    requestAnimationFrame(animate);
+    const elapsedTime = clock.getElapsedTime();
+    const targetX = mouseX * 0.001;
+    const targetY = mouseY * 0.001;
 
-      // slowly follow the mouse
-      targetX = mouseX * 0.001;
-      targetY = mouseY * 0.001;
+    particlesMesh.rotation.y += 0.001;
+    particlesMesh.rotation.x += 0.0005;
+    particlesMesh.rotation.y += 0.05 * (targetX - particlesMesh.rotation.y);
+    particlesMesh.rotation.x += 0.05 * (targetY - particlesMesh.rotation.x);
 
-      // slowly rotate the particle cloud
-      particlesMesh.rotation.y += 0.001; 
-      particlesMesh.rotation.x += 0.0005;
+    const positions = geometry.attributes.position.array;
+    for (let i = 0; i < particlesCount; i++) {
+      const i3 = i * 3;
+      const x = positions[i3];
+      const z = positions[i3 + 2];
+      positions[i3 + 1] = baseY[i] + Math.sin(elapsedTime * 0.45 + x * 0.01 + z * 0.01) * 3.2;
+    }
+    geometry.attributes.position.needsUpdate = true;
 
-      // also tilt towards where the mouse is
-      particlesMesh.rotation.y += 0.05 * (targetX - particlesMesh.rotation.y);
-      particlesMesh.rotation.x += 0.05 * (targetY - particlesMesh.rotation.x);
+    torus.rotation.x += 0.0006;
+    torus.rotation.y += 0.0011;
+    ico.rotation.x += 0.0009;
+    ico.rotation.y += 0.0007;
+    ring.rotation.z += 0.0005;
+    oct.rotation.y += 0.0012;
+    oct.rotation.x += 0.00045;
+    dodec.rotation.y -= 0.00085;
+    box.rotation.x += 0.00038;
+    box.rotation.y += 0.00052;
+    knot.rotation.x += 0.00055;
+    knot.rotation.y += 0.0009;
 
-      // make each particle drift up and down gently
-      const positions = geometry.attributes.position.array;
-      for(let i = 0; i < particlesCount; i++) {
-          const i3 = i * 3;
-          const x = positions[i3];
-          const z = positions[i3 + 2];
-          positions[i3 + 1] += Math.sin(elapsedTime + x + z) * 0.05; 
-      }
-      geometry.attributes.position.needsUpdate = true;
-
-      renderer.render(scene, camera);
+    renderer.render(scene, camera);
   }
   animate();
 
-  // update canvas size when window is resized
+  let resizeTimer;
   window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    }, 120);
   });
 })();
 
