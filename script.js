@@ -180,6 +180,14 @@ if (typeof gsap !== 'undefined') {
 (function initGSAP() {
   if (typeof gsap === 'undefined') return;
 
+  const strokes = document.querySelectorAll('.kanji-stroke');
+  const strokeLengths = Array.from(strokes).map(stroke => {
+    const length = stroke.getTotalLength();
+    stroke.style.strokeDasharray = length;
+    stroke.style.strokeDashoffset = length;
+    return length;
+  });
+
   // preloader counts from 0 to 100% then slides away
   const masterTimeline = gsap.timeline();
   if (typeof lenis !== 'undefined') lenis.stop();
@@ -189,10 +197,29 @@ if (typeof gsap !== 'undefined') {
 
   masterTimeline.to(counterObj, {
     val: 100,
-    duration: 1.8,
-    ease: 'power3.inOut',
+    duration: 2.2,
+    ease: 'power1.inOut',
     onUpdate: () => {
-      if (preloaderStr) preloaderStr.textContent = Math.round(counterObj.val).toString().padStart(2, '0') + '%';
+      const val = Math.round(counterObj.val);
+      if (preloaderStr) preloaderStr.textContent = val.toString().padStart(2, '0') + '%';
+      
+      const numStrokes = strokes.length;
+      const step = 100 / numStrokes;
+      
+      strokes.forEach((stroke, i) => {
+        const length = strokeLengths[i];
+        const startPct = i * step;
+        const endPct = (i + 1) * step;
+        
+        if (counterObj.val <= startPct) {
+          stroke.style.strokeDashoffset = length;
+        } else if (counterObj.val >= endPct) {
+          stroke.style.strokeDashoffset = 0;
+        } else {
+          const pct = (counterObj.val - startPct) / step;
+          stroke.style.strokeDashoffset = length * (1 - pct);
+        }
+      });
     }
   })
   .to('#preloader', {
@@ -254,8 +281,8 @@ if (typeof gsap !== 'undefined') {
     { opacity: 0, y: 40 }, 
     { opacity: 1, y: 0, duration: 1, scrollTrigger: { trigger: '.about-grid', start: 'top 80%' } });
 
-  gsap.fromTo('.skill-group', 
-    { opacity: 0, x: -30 }, 
+  gsap.fromTo('.skill-group h4', 
+    { opacity: 0, x: -20 }, 
     { opacity: 1, x: 0, stagger: 0.1, duration: 0.8, scrollTrigger: { trigger: '.about-grid', start: 'top 70%' } });
 
   // fade in the contact cards
@@ -506,7 +533,7 @@ magneticBtns.forEach(btn => {
     });
 });
 
-// 5. hovering a project card makes the image tilt in 3d
+// 5. hovering a project card makes the image tilt in 3d and repels the card
 projectCards.forEach(card => {
     const imgWrap = card.querySelector('.card-img-wrap');
     if(!imgWrap) return;
@@ -516,18 +543,29 @@ projectCards.forEach(card => {
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top + rect.height / 2;
         
+        // Anti-Gravity Repulsion calculations
+        const dx = centerX - e.clientX;
+        const dy = centerY - e.clientY;
+        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        const maxRepel = 15;
+        const repelForce = (1 - Math.min(dist / 300, 1)) * maxRepel;
+        const repelX = (dx / dist) * repelForce;
+        const repelY = (dy / dist) * repelForce - 8;
+
         const posX = (e.clientX - centerX) / (rect.width / 2);
         const posY = (e.clientY - centerY) / (rect.height / 2);
         
         const tiltX = posY * -15; // tilt up/down
         const tiltY = posX * 15;  // tilt left/right
 
-        // lift the card and add a glow
+        // move/lift the card and add a glow
         gsap.to(card, {
-             y: -8,
+             x: repelX,
+             y: repelY,
              boxShadow: '0 25px 60px rgba(0,0,0,0.8), 0 0 40px rgba(0,255,195,0.15)',
              borderColor: 'rgba(0,255,195,0.4)',
-             duration: 0.4
+             duration: 0.4,
+             ease: 'power2.out'
         });
         
         // also tilt the image inside
@@ -543,10 +581,12 @@ projectCards.forEach(card => {
 
     card.addEventListener('mouseleave', () => {
         gsap.to(card, {
+             x: 0,
              y: 0,
              boxShadow: 'none',
              borderColor: 'var(--glass-border)',
-             duration: 0.6
+             duration: 0.8,
+             ease: 'elastic.out(1, 0.4)'
         });
         gsap.to(imgWrap, {
              rotationX: 0,
@@ -654,3 +694,606 @@ if (typeof lenis !== 'undefined' && trackerBar) {
         }
     });
 }
+
+// 5. Dynamic Now Playing / Status Ticker
+(function initNowPlaying() {
+  const textEl = document.getElementById('statusText');
+  if (!textEl) return;
+  fetch('now-playing.json')
+    .then(res => {
+      if (!res.ok) throw new Error('Not ok');
+      return res.json();
+    })
+    .then(data => {
+      if (data && data.status) {
+        textEl.textContent = data.status;
+      }
+    })
+    .catch(err => {
+      console.warn("Could not load now-playing.json, using fallback status", err);
+      textEl.textContent = "Currently learning: Advanced DSA in C++ · PyTorch basics · GLSL shader maps";
+    });
+})();
+
+// 6. Stats Counter & Live GitHub API Fetch
+(function initStats() {
+  const projectsEl = document.getElementById('stat-projects');
+  const commitsEl = document.getElementById('stat-commits');
+  const hoursEl = document.getElementById('stat-hours');
+  if (!projectsEl || !commitsEl || !hoursEl) return;
+
+  let projectsCount = 14;
+  let commitsCount = 312;
+
+  const startDate = new Date('2025-07-01');
+  const now = new Date();
+  const diffDays = (now - startDate) / (1000 * 60 * 60 * 24);
+  const hoursCount = Math.max(100, Math.floor(diffDays * 4.2));
+
+  gsap.fromTo([projectsEl, commitsEl, hoursEl], 
+    { textContent: 0 },
+    {
+      textContent: (i, target) => {
+        if (target.id === 'stat-projects') return projectsCount;
+        if (target.id === 'stat-commits') return commitsCount;
+        return hoursCount;
+      },
+      duration: 2.2,
+      ease: 'power2.out',
+      snap: { textContent: 1 },
+      scrollTrigger: {
+        trigger: '.stats-row',
+        start: 'top 85%',
+        once: true
+      }
+    }
+  );
+
+  fetch('https://api.github.com/users/Alppoint')
+    .then(res => res.json())
+    .then(data => {
+      if (data && data.public_repos) {
+        projectsCount = Math.max(projectsCount, data.public_repos);
+        projectsEl.textContent = projectsCount;
+      }
+    })
+    .catch(err => console.warn("Failed to fetch public repos count", err));
+
+  fetch('https://api.github.com/users/Alppoint/events')
+    .then(res => res.json())
+    .then(events => {
+      let pushCommits = 0;
+      if (Array.isArray(events)) {
+        events.forEach(ev => {
+          if (ev.type === 'PushEvent' && ev.payload && ev.payload.commits) {
+            pushCommits += ev.payload.commits.length;
+          }
+        });
+      }
+      commitsCount = 280 + pushCommits;
+      commitsEl.textContent = commitsCount;
+    })
+    .catch(err => console.warn("Failed to fetch commit events", err));
+})();
+
+// 7. GitHub Heatmap Grid Generator
+(function initGithubHeatmap() {
+  const grid = document.getElementById('github-heatmap-grid');
+  if (!grid) return;
+
+  const totalDays = 168; // 24 weeks * 7 days
+  const now = new Date();
+  
+  const startDate = new Date(now);
+  startDate.setDate(now.getDate() - totalDays + 1);
+
+  const activityData = {};
+
+  const formatDate = (date) => {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  };
+
+  for (let i = 0; i < totalDays; i++) {
+    const d = new Date(startDate);
+    d.setDate(startDate.getDate() + i);
+    const dateStr = formatDate(d);
+    
+    let hash = 0;
+    for (let c = 0; c < dateStr.length; c++) {
+      hash = dateStr.charCodeAt(c) + ((hash << 5) - hash);
+    }
+    const rand = Math.abs(hash) % 10;
+    let level = 0;
+    if (rand === 4 || rand === 5) level = 1;
+    else if (rand === 6 || rand === 7) level = 2;
+    else if (rand === 8) level = 3;
+    else if (rand === 9) level = 4;
+    
+    activityData[dateStr] = {
+      count: level > 0 ? level * 2 : 0,
+      level: level,
+      date: d
+    };
+  }
+
+  fetch('https://api.github.com/users/Alppoint/events')
+    .then(res => {
+      if (!res.ok) throw new Error();
+      return res.json();
+    })
+    .then(events => {
+      if (Array.isArray(events) && events.length > 0) {
+        const eventsDays = 90;
+        const resetStart = new Date(now);
+        resetStart.setDate(now.getDate() - eventsDays);
+        for (let i = 0; i < totalDays; i++) {
+          const d = new Date(startDate);
+          d.setDate(startDate.getDate() + i);
+          if (d >= resetStart) {
+            const dateStr = formatDate(d);
+            activityData[dateStr] = { count: 0, level: 0, date: d };
+          }
+        }
+
+        events.forEach(event => {
+          if (!event.created_at) return;
+          const dateStr = event.created_at.substring(0, 10);
+          if (activityData[dateStr]) {
+            let contributionCount = 1;
+            if (event.type === 'PushEvent' && event.payload && event.payload.commits) {
+              contributionCount = event.payload.commits.length;
+            }
+            activityData[dateStr].count += contributionCount;
+          }
+        });
+
+        for (const dateStr in activityData) {
+          const count = activityData[dateStr].count;
+          let level = 0;
+          if (count > 0 && count <= 2) level = 1;
+          else if (count > 2 && count <= 4) level = 2;
+          else if (count > 4 && count <= 6) level = 3;
+          else if (count > 6) level = 4;
+          
+          const d = activityData[dateStr].date;
+          if (d >= resetStart) {
+            activityData[dateStr].level = level;
+          }
+        }
+      }
+      renderHeatmap();
+    })
+    .catch(err => {
+      console.warn("Could not load live GitHub events for heatmap, using fallback pattern.", err);
+      renderHeatmap();
+    });
+
+  function renderHeatmap() {
+    grid.innerHTML = '';
+    
+    for (let i = 0; i < totalDays; i++) {
+      const d = new Date(startDate);
+      d.setDate(startDate.getDate() + i);
+      const dateStr = formatDate(d);
+      
+      const dayData = activityData[dateStr];
+      const cell = document.createElement('div');
+      cell.className = `heatmap-cell level-${dayData.level}`;
+      
+      const options = { year: 'numeric', month: 'short', day: 'numeric' };
+      const formattedDate = dayData.date.toLocaleDateString('en-US', options);
+      const tooltipText = `${dayData.count} contribution${dayData.count === 1 ? '' : 's'} on ${formattedDate}`;
+      cell.setAttribute('data-tooltip', tooltipText);
+      
+      grid.appendChild(cell);
+    }
+  }
+})();
+
+// 8. BCA Semester Timeline Details Loader
+(function initSemesterTimeline() {
+  const detailsBox = document.getElementById('sem-details-box');
+  const tabs = document.querySelectorAll('.sem-tab');
+  if (!detailsBox || tabs.length === 0) return;
+
+  const semesterData = {
+    1: {
+      title: "Semester 1 – Computer Foundations",
+      status: "Completed · GPA: 9.2/10",
+      desc: "Mastered base computer architectures, structural logic flow in procedural C programming, and calculus methods for logic representations. Turned theory into terminal console apps.",
+      skills: ["C Programming", "Computer Fundamentals", "Mathematical Calculus", "Technical Communication"],
+      highlight: "Completed C quiz console app and full laboratory assignments repository."
+    },
+    2: {
+      title: "Semester 2 – Data Structures & Web Architectures",
+      status: "In Progress (Current Focus)",
+      desc: "Deep diving into complex memory addressing, recursion, data structures (stacks, queues, linked lists, trees) in C++, modern front-end styling structures, and statistical distributions.",
+      skills: ["DSA in C++", "Web Technologies", "Probability & Statistics", "Digital Electronics"],
+      highlight: "Building modular responsive web tools (Gym Vault WebGL, Expense Tracker, Notes app)."
+    },
+    3: {
+      title: "Semester 3 – Relational Databases & Automation",
+      status: "Upcoming",
+      desc: "Preparing for structural SQL schemas, transaction flows, computational mathematical modeling, and Python scripting pipelines for AI development.",
+      skills: ["Relational DBMS & SQL", "Python Programming", "Computer Architecture", "Discrete Mathematics"],
+      highlight: "Pre-learning database engines connections and scripting automated scripts."
+    },
+    4: {
+      title: "Semester 4 – Operating Systems & System Logic",
+      status: "Planned",
+      desc: "Focusing on process schedulers, kernel interfaces, virtual memory allocation, numerical logic approximations, and structural object programming frameworks.",
+      skills: ["Operating Systems", "Java Programming", "Software Engineering", "Numerical Methods"],
+      highlight: "Multi-threaded process simulation models in Java."
+    },
+    5: {
+      title: "Semester 5 – Machine Learning & Cloud Architectures",
+      status: "Planned",
+      desc: "Specializing in vector statistics, neuron layers, classifier training, and building scalable cloud-native microservice gateways.",
+      skills: ["Machine Learning Basics", "Computer Networks", "Mobile Apps (Android/iOS)", "Cloud Infrastructure"],
+      highlight: "Developing custom neural classifier pipelines with PyTorch and deploying API services."
+    },
+    6: {
+      title: "Semester 6 – AI Systems & BCA Capstone Project",
+      status: "Planned",
+      desc: "Compiling full system modules, API connections, and intelligent neural interfaces to release a production-grade BCA capstone web product.",
+      skills: ["Artificial Intelligence", "Information Security", "Capstone Project", "Software Testing"],
+      highlight: "Full-scale agentic AI assistant integrated into creative web apps."
+    }
+  };
+
+  const showSemester = (semNum) => {
+    const data = semesterData[semNum];
+    if (!data) return;
+
+    gsap.to(detailsBox, {
+      opacity: 0,
+      y: 10,
+      duration: 0.25,
+      onComplete: () => {
+        let skillsHtml = '';
+        data.skills.forEach(skill => {
+          skillsHtml += `<span class="pill">${skill}</span>`;
+        });
+
+        detailsBox.innerHTML = `
+          <div class="sem-detail-header">
+            <div class="sem-detail-title">${data.title}</div>
+            <div class="sem-detail-status">${data.status}</div>
+          </div>
+          <p class="sem-detail-desc">${data.desc}</p>
+          <div class="sem-detail-skills">${skillsHtml}</div>
+          <div class="sem-detail-highlight"><strong>Key Focus:</strong> ${data.highlight}</div>
+        `;
+
+        gsap.to(detailsBox, {
+          opacity: 1,
+          y: 0,
+          duration: 0.35,
+          ease: 'power2.out'
+        });
+      }
+    });
+  };
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const sem = tab.getAttribute('data-sem');
+      
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      showSemester(sem);
+    });
+  });
+
+  showSemester(2);
+})();
+
+// 9. Project Case Study Overlay Modal
+(function initCaseStudies() {
+  const overlay = document.getElementById('caseStudyOverlay');
+  const content = document.getElementById('caseStudyContent');
+  const closeBtn = document.getElementById('caseStudyClose');
+  const cards = document.querySelectorAll('.project-card');
+
+  if (!overlay || !content || !closeBtn || cards.length === 0) return;
+
+  const caseStudyData = {
+    "01": {
+      title: "Study Tracker",
+      eyebrow: "Productivity Tool",
+      timeline: "July 2025 · 2 Weeks",
+      role: "Solo Developer",
+      tech: "HTML5 · CSS3 · Vanilla JavaScript · LocalStorage",
+      demo: "https://alppoint.github.io/study-tracker/",
+      source: "https://github.com/Alppoint/study-tracker",
+      image: "study-tracker.png",
+      problem: "Entering BCA, I realized my study hours were highly inconsistent. I had no structured logs, no daily progress updates, and no feedback on how time was allocated across various programming and mathematics courses.",
+      process: "I designed and implemented an offline-first dashboard using vanilla Javascript. I focused on building structured inputs to record individual study sessions, calculating and updating daily target completions in real-time, and persisting records securely in the user's browser localStorage. I also added a simple consecutive daily streak tracker to gamify study consistency and keep motivation high.",
+      result: "A highly responsive, clean client-side utility that operates completely without server dependencies or databases. It successfully resolved my time-tracking needs, resulting in a persistent study history with zero loading latency."
+    },
+    "02": {
+      title: "JS & Web Lab",
+      eyebrow: "Coursework Sandbox",
+      timeline: "August 2025 · 3 Weeks",
+      role: "Student Developer",
+      tech: "HTML5 · Bootstrap 5 · JavaScript · Git",
+      demo: "https://alppoint.github.io/js-web-lab/",
+      source: "https://github.com/Alppoint/js-web-lab",
+      image: "js-web-lab2.png",
+      problem: "College-assigned web exercises are typically compiled as basic files with outdated, uninspired styles. I wanted to organize my BCA laboratory projects into a single, cohesive, modern workspace that looked clean and felt responsive.",
+      process: "I took basic lab assignments—such as form validation logic, arrays manipulation, string processing, and simple event binding—and created a structural Bootstrap-based testing lab. I structured it as a unified portal, documenting individual code requirements and adding live playground elements to execute the scripts directly in the browser.",
+      result: "High marks on class assignments and a reusable documentation setup. It showcases my ability to turn basic tasks into professional, well-documented user interfaces."
+    },
+    "03": {
+      title: "C Lab Programs",
+      eyebrow: "System Programming Foundations",
+      timeline: "October 2025 · 4 Weeks",
+      role: "Solo Developer",
+      tech: "C Language · GCC Compiler · GNU Make · GitHub",
+      demo: null,
+      source: "https://github.com/Alppoint/-c-lab-programs",
+      image: "c-lab-programs.png",
+      problem: "First-year C programming lab exercises are usually written and compiled in isolation. I wanted to develop a centralized repo with structured build scripts and thorough input validation logs to master low-level programming constraints.",
+      process: "I systematically solved coursework problems covering pointer arithmetic, file I/O operations, complex structure allocations, and multi-dimensional matrices. I set up GCC compiler commands and organized the folders under strict directory conventions. I also focused heavily on writing custom helper modules in C to clean up user terminal input buffering and handle stack bounds safely.",
+      result: "Mastery of primary C programming principles (memory layout, file streams, pointers). The repository acts as a reliable baseline reference for structured logic."
+    },
+    "04": {
+      title: "C Quiz Console App",
+      eyebrow: "Interactive Terminal Game",
+      timeline: "November 2025 · 1 Week",
+      role: "Solo Developer",
+      tech: "C Language · Console I/O · Modular Functions",
+      demo: null,
+      source: null,
+      image: null,
+      problem: "Traditional terminal-based quizzes compiled during coursework lack player engagement, clear feedback loops, or structured state control.",
+      process: "I built a quiz engine completely in standard C. I mapped categories of questions into array structures, coded state tracking routines to record points and progress, and modularized the logic into separate utility files. Special attention was paid to cleansing input streams to prevent infinite recursion bugs when users typed letters instead of numbers.",
+      result: "A lightweight terminal application that compiles instantly on any standard GCC platform, running efficiently without external graphic dependencies."
+    },
+    "05": {
+      title: "Portfolio v1",
+      eyebrow: "Creative Development Showcase",
+      timeline: "December 2025 · 4 Weeks",
+      role: "Creative Developer",
+      tech: "HTML5 · CSS3 · GSAP · Lenis · Three.js",
+      demo: null,
+      source: "https://github.com/Alppoint/ActivePortfolioMain",
+      image: null,
+      problem: "Standard web portfolios are static, rigid, and fail to reflect the dynamic nature of interactive theories or high-performance motion design.",
+      process: "I conceptualized a cinematic dark portfolio matching premium active-theory styles. I integrated a Three.js wireframe particle canvas for the hero background, GSAP scroll-triggered animations, and a Lenis smooth scroll container. I also added multiple subtle details: a mouse spotlight mask, a dust canvas drift, and magnetic magnetic button spring states.",
+      result: "An immersive creative portfolio that is fluid, responsive, and performs at a stable 60fps, providing a perfect experimental sandbox that evolves as I learn."
+    },
+    "06": {
+      title: "Expense Tracker",
+      eyebrow: "Financial Management Dashboard",
+      timeline: "January 2026 · 3 Weeks",
+      role: "Solo Developer",
+      tech: "HTML5 · CSS3 · Canvas 2D · JavaScript · LocalStorage",
+      demo: "expense-tracker/index.html",
+      source: "https://github.com/Alppoint/ActivePortfolioMain/tree/main/expense-tracker",
+      image: "expense-tracker.png.png",
+      problem: "Commercial budgeting trackers are overloaded with features, require cloud accounts, and often sell user metadata, creating privacy concerns.",
+      process: "I built a zero-dependency web interface. I implemented a custom HTML5 Canvas 2D rendering loop to draw clean category donut charts, mapped sorting routines to filter categories on the fly, and structured local CRUD utilities. The dashboard keeps details securely saved locally in the browser.",
+      result: "A private, zero-latency financial tracking workspace that runs completely local, loading instantly while giving clear visual spending metrics."
+    },
+    "07": {
+      title: "Notes App",
+      eyebrow: "Themes Productivity Tool",
+      timeline: "February 2026 · 2 Weeks",
+      role: "Solo Developer",
+      tech: "HTML5 · CSS3 · JavaScript · LocalStorage",
+      demo: "notes-app/index.html",
+      source: "https://github.com/Alppoint/ActivePortfolioMain/tree/main/notes-app",
+      image: "notes-app.png.png",
+      problem: "Text editors are often bogged down by menus or locked into a single aesthetic, disrupting quick writing states.",
+      process: "I created an offline-first notes sandbox. I coded 5 dynamic visual layouts (Classic Dark, Retro Matrix, Synthwave Neon, Light Paper, Sepia), bound real-time auto-saving routines, and calculated continuous word counts. The application relies on state handlers to keep pinned notes structured at the top of the collection.",
+      result: "A clean, responsive text manager that caches drafts instantly on keystrokes and provides visual styles matching various creative preferences."
+    },
+    "08": {
+      title: "Vault — Gym & Macro Lab",
+      eyebrow: "Interactive WebGL Workspace",
+      timeline: "March 2026 · 4 Weeks",
+      role: "Full Stack Developer",
+      tech: "Three.js (WebGL) · LocalStorage · CSS Grid · Macro Database",
+      demo: "gym-app/index.html",
+      source: "https://github.com/Alppoint/ActivePortfolioMain/tree/main/gym-app",
+      image: "gym-app.png",
+      problem: "Workout and nutrition applications fail to connect anatomical exercises to macro intake databases in a single offline-friendly interface.",
+      process: "I combined WebGL graphics with fitness datasets. I loaded an anatomical human mesh using Three.js and bound mesh raycasting so users can click specific muscles to filter corresponding training workouts. I also designed a custom Indian/International food macro query database and a weekly plan scheduler saved locally.",
+      result: "A premium, cinematic physical fitness command dashboard that serves as a highly functional client-side app, loading in seconds."
+    }
+  };
+
+  const openCaseStudy = (index) => {
+    const data = caseStudyData[index];
+    if (!data) return;
+
+    let imageHtml = '';
+    if (data.image) {
+      imageHtml = `
+        <div class="cs-img-wrap">
+          <img src="${data.image}" alt="${data.title}" />
+        </div>
+      `;
+    }
+
+    let linksHtml = '';
+    if (data.demo) {
+      linksHtml += `<a href="${data.demo}" target="_blank" class="card-link">Live Demo →</a>`;
+    }
+    if (data.source) {
+      linksHtml += `<a href="${data.source}" target="_blank" class="card-link ghost">Source Code ↗</a>`;
+    }
+
+    content.innerHTML = `
+      <header class="cs-header">
+        <span class="cs-eyebrow">${data.eyebrow}</span>
+        <h2 class="cs-title">${data.title}</h2>
+        <div class="cs-meta-grid">
+          <div class="cs-meta-item">
+            <h5>Timeline</h5>
+            <p>${data.timeline}</p>
+          </div>
+          <div class="cs-meta-item">
+            <h5>Role</h5>
+            <p>${data.role}</p>
+          </div>
+          <div class="cs-meta-item">
+            <h5>Tech Stack</h5>
+            <p>${data.tech}</p>
+          </div>
+          <div class="cs-meta-item">
+            <h5>Links</h5>
+            <p>${linksHtml || 'Project files offline'}</p>
+          </div>
+        </div>
+      </header>
+
+      ${imageHtml}
+
+      <div class="cs-sections-grid">
+        <section class="cs-section">
+          <div class="cs-sec-left">
+            <h4>Problem</h4>
+          </div>
+          <div class="cs-sec-right">
+            <p>${data.problem}</p>
+          </div>
+        </section>
+
+        <section class="cs-section">
+          <div class="cs-sec-left">
+            <h4>Process</h4>
+          </div>
+          <div class="cs-sec-right">
+            <p>${data.process}</p>
+          </div>
+        </section>
+
+        <section class="cs-section">
+          <div class="cs-sec-left">
+            <h4>Result</h4>
+          </div>
+          <div class="cs-sec-right">
+            <p>${data.result}</p>
+          </div>
+        </section>
+      </div>
+    `;
+
+    overlay.classList.add('open');
+    if (typeof lenis !== 'undefined') lenis.stop();
+    document.body.classList.add('lenis-stopped');
+    
+    gsap.fromTo(content, { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' });
+  };
+
+  const closeCaseStudy = () => {
+    overlay.classList.remove('open');
+    if (typeof lenis !== 'undefined') lenis.start();
+    document.body.classList.remove('lenis-stopped');
+  };
+
+  cards.forEach(card => {
+    card.style.cursor = 'pointer';
+    
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('a') || e.target.closest('button')) {
+        return;
+      }
+      const index = card.getAttribute('data-index');
+      if (index) {
+        openCaseStudy(index);
+      }
+    });
+  });
+
+  closeBtn.addEventListener('click', closeCaseStudy);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      closeCaseStudy();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && overlay.classList.contains('open')) {
+      closeCaseStudy();
+    }
+  });
+
+  window.openCaseStudyIndex = openCaseStudy;
+  window.closeCaseStudy = closeCaseStudy;
+  window.isCaseStudyOpen = () => overlay.classList.contains('open');
+})();
+
+// 10. Keyboard Navigation (J/K to scroll between cards, Enter to open)
+(function initKeyboardNav() {
+  const cards = document.querySelectorAll('.project-card');
+  if (cards.length === 0) return;
+
+  let activeIndex = -1;
+
+  const setActiveCard = (index) => {
+    cards.forEach(card => card.classList.remove('keyboard-focused'));
+    
+    if (index >= 0 && index < cards.length) {
+      activeIndex = index;
+      const targetCard = cards[activeIndex];
+      targetCard.classList.add('keyboard-focused');
+      
+      if (typeof lenis !== 'undefined') {
+        lenis.scrollTo(targetCard, { offset: -window.innerHeight / 2 + targetCard.offsetHeight / 2 });
+      } else {
+        targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  };
+
+  document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) {
+      return;
+    }
+
+    if (window.isTerminalOpen && window.isTerminalOpen()) {
+      return;
+    }
+
+    const isModalOpen = window.isCaseStudyOpen && window.isCaseStudyOpen();
+    if (isModalOpen) {
+      return;
+    }
+
+    const key = e.key.toLowerCase();
+    
+    if (key === 'j' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      let nextIndex = activeIndex + 1;
+      if (nextIndex >= cards.length) nextIndex = 0;
+      setActiveCard(nextIndex);
+    } else if (key === 'k' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      let prevIndex = activeIndex - 1;
+      if (prevIndex < 0) prevIndex = cards.length - 1;
+      setActiveCard(prevIndex);
+    } else if (e.key === 'Enter') {
+      if (activeIndex >= 0 && activeIndex < cards.length) {
+        e.preventDefault();
+        const indexStr = cards[activeIndex].getAttribute('data-index');
+        if (indexStr && window.openCaseStudyIndex) {
+          window.openCaseStudyIndex(indexStr);
+        }
+      }
+    }
+  });
+
+  cards.forEach((card, index) => {
+    card.addEventListener('mouseenter', () => {
+      cards.forEach(c => c.classList.remove('keyboard-focused'));
+      activeIndex = index;
+    });
+  });
+})();

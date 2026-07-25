@@ -36,9 +36,24 @@
 </head>
 
 <body class="font-display overflow-x-hidden cursor-none">
+  <script>
+    if (localStorage.getItem('theme') === 'light') {
+      document.body.classList.add('light');
+    }
+  </script>
   <!-- PRELOADER -->
   <div id="preloader" class="preloader">
-    <div class="preloader-counter" id="preloader-counter">00%</div>
+    <div class="preloader-content flex flex-col items-center gap-6">
+      <svg class="preloader-kanji" viewBox="0 0 100 100" width="120" height="120">
+        <path class="kanji-stroke" d="M 50 15 L 50 35" />
+        <path class="kanji-stroke" d="M 30 25 Q 38 33 42 35" />
+        <path class="kanji-stroke" d="M 70 23 Q 62 31 58 35" />
+        <path class="kanji-stroke" d="M 20 45 L 80 45" />
+        <path class="kanji-stroke" d="M 45 45 Q 40 70 22 82" />
+        <path class="kanji-stroke" d="M 55 45 L 55 68 Q 55 85 75 85 Q 82 85 82 76" />
+      </svg>
+      <div class="preloader-counter" id="preloader-counter">00%</div>
+    </div>
   </div>
 
   <!-- NAV -->
@@ -123,7 +138,7 @@
           <article class="project-card" data-index="01">
             <div class="card-top">
               <span class="card-num">01</span>
-              <span class="card-status live">● Live</span>
+              <span class="card-status live"><span class="pulse-dot pulse-live"></span>Live</span>
             </div>
             <h3 class="card-title">Study Tracker</h3>
             <div class="card-img-wrap">
@@ -151,7 +166,7 @@
           <article class="project-card" data-index="02">
             <div class="card-top">
               <span class="card-num">02</span>
-              <span class="card-status live">● Live</span>
+              <span class="card-status live"><span class="pulse-dot pulse-live"></span>Live</span>
             </div>
             <h3 class="card-title">JS & Web Lab</h3>
             <div class="card-img-wrap">
@@ -176,7 +191,7 @@
           <article class="project-card" data-index="03">
             <div class="card-top">
               <span class="card-num">03</span>
-              <span class="card-status done">✓ Completed</span>
+              <span class="card-status done"><span class="pulse-dot pulse-done"></span>Completed</span>
             </div>
             <h3 class="card-title">C Lab Programs</h3>
             <div class="card-img-wrap">
@@ -198,7 +213,7 @@
           <article class="project-card no-img" data-index="04">
             <div class="card-top">
               <span class="card-num">04</span>
-              <span class="card-status done">✓ Completed</span>
+              <span class="card-status done"><span class="pulse-dot pulse-done"></span>Completed</span>
             </div>
             <h3 class="card-title">C Quiz Console App</h3>
             <p class="card-tech">C · Functions · Arrays</p>
@@ -218,7 +233,7 @@
           <article class="project-card no-img" data-index="05">
             <div class="card-top">
               <span class="card-num">05</span>
-              <span class="card-status wip">◐ In Progress</span>
+              <span class="card-status wip"><span class="pulse-dot pulse-wip"></span>In Progress</span>
             </div>
             <h3 class="card-title">Portfolio v1</h3>
             <p class="card-tech">HTML · CSS · JS</p>
@@ -237,7 +252,7 @@
           <article class="project-card" data-index="06">
             <div class="card-top">
               <span class="card-num">06</span>
-              <span class="card-status live">● Live</span>
+              <span class="card-status live"><span class="pulse-dot pulse-live"></span>Live</span>
             </div>
             <h3 class="card-title">Expense Tracker</h3>
             <div class="card-img-wrap">
@@ -265,7 +280,7 @@
           <article class="project-card" data-index="07">
             <div class="card-top">
               <span class="card-num">07</span>
-              <span class="card-status live">● Live</span>
+              <span class="card-status live"><span class="pulse-dot pulse-live"></span>Live</span>
             </div>
             <h3 class="card-title">Notes App</h3>
             <div class="card-img-wrap">
@@ -293,7 +308,7 @@
           <article class="project-card" data-index="08">
             <div class="card-top">
               <span class="card-num">08</span>
-              <span class="card-status live">● Live</span>
+              <span class="card-status live"><span class="pulse-dot pulse-live"></span>Live</span>
             </div>
             <h3 class="card-title">Vault — Gym &amp; macro lab</h3>
             <div class="card-img-wrap">
@@ -322,6 +337,17 @@
         <p class="section-label">Who I Am</p>
         <h2 class="section-title">About Me</h2>
       </div>
+      
+      <!-- Currently Learning Ticker -->
+      <div class="learning-ticker mb-16">
+        <div class="ticker-label font-mono">LEARNING</div>
+        <div class="ticker-marquee-wrapper">
+          <div class="ticker-marquee">
+            <span>DSA in C++ · PyTorch basics · GLSL shaders · Web Technology · Math for ML · Three.js Shading · &nbsp;</span>
+            <span>DSA in C++ · PyTorch basics · GLSL shaders · Web Technology · Math for ML · Three.js Shading · &nbsp;</span>
+          </div>
+        </div>
+      </div>
       <div class="about-grid">
         <div class="about-text reveal-up">
           <p>I'm a first-year BCA student specializing in AI and Machine Learning, currently learning C, Python and
@@ -330,6 +356,22 @@
           <br>
           <p>Over the next few semesters I'm focusing on core programming, AI/ML mini-projects and experimenting with
             WebGL and Three.js for immersive portfolio pieces. This site evolves as I learn.</p>
+          
+          <!-- Stats Counters -->
+          <div class="stats-row flex gap-12 mt-12 flex-wrap">
+            <div class="stat-item">
+              <div class="stat-val font-display text-4xl font-extrabold text-ag-cyan" id="stat-projects">0</div>
+              <div class="stat-lbl font-mono text-[0.62rem] text-zinc-500 uppercase tracking-widest mt-1">Projects Built</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-val font-display text-4xl font-extrabold text-ag-purple" id="stat-commits">0</div>
+              <div class="stat-lbl font-mono text-[0.62rem] text-zinc-500 uppercase tracking-widest mt-1">GitHub Commits</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-val font-display text-4xl font-extrabold text-ag-gold" id="stat-hours">0</div>
+              <div class="stat-lbl font-mono text-[0.62rem] text-zinc-500 uppercase tracking-widest mt-1">Hours Studied</div>
+            </div>
+          </div>
         </div>
         <div class="about-skills reveal-up" style="--d:0.2s">
           <div class="skill-group">
@@ -364,6 +406,47 @@
               <span class="pill">GitHub</span>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- BCA Semesters Timeline -->
+      <div class="learning-timeline-container mt-16 pt-8 border-t border-[var(--glass-border)] reveal-up">
+        <h4 class="font-mono text-xs text-zinc-500 uppercase tracking-widest mb-6">BCA Semesters Learning Log</h4>
+        <div class="semesters-row flex gap-4 border-b border-[var(--glass-border)] pb-4 overflow-x-auto">
+          <button class="sem-tab completed" data-sem="1">Sem 1 <span class="sem-status-check">✓</span></button>
+          <button class="sem-tab active" data-sem="2">Sem 2 <span class="sem-pulse-dot"></span></button>
+          <button class="sem-tab" data-sem="3">Sem 3</button>
+          <button class="sem-tab" data-sem="4">Sem 4</button>
+          <button class="sem-tab" data-sem="5">Sem 5</button>
+          <button class="sem-tab" data-sem="6">Sem 6</button>
+        </div>
+        <div class="semester-details mt-6 p-6 background-glass border border-[var(--glass-border)] rounded" id="sem-details-box">
+          <!-- Loaded dynamically via JS -->
+        </div>
+      </div>
+
+      <!-- GitHub Heatmap -->
+      <div class="github-heatmap-container mt-16 pt-8 border-t border-[var(--glass-border)] reveal-up">
+        <div class="flex items-center justify-between mb-4">
+          <h4 class="font-mono text-xs text-zinc-500 uppercase tracking-widest">GitHub Activity (Live Heatmap)</h4>
+          <a href="https://github.com/Alppoint" target="_blank" class="font-mono text-xs text-ag-cyan no-underline hover:underline">@Alppoint ↗</a>
+        </div>
+        <div class="heatmap-wrapper">
+          <div class="heatmap-days font-mono text-[0.55rem] text-zinc-600 flex flex-col justify-between py-1 pr-3">
+            <span>Mon</span>
+            <span>Wed</span>
+            <span>Fri</span>
+          </div>
+          <div class="heatmap-grid" id="github-heatmap-grid"></div>
+        </div>
+        <div class="heatmap-legend font-mono text-[0.55rem] text-zinc-600 flex justify-end items-center gap-1 mt-2">
+          <span>Less</span>
+          <span class="legend-cell level-0"></span>
+          <span class="legend-cell level-1"></span>
+          <span class="legend-cell level-2"></span>
+          <span class="legend-cell level-3"></span>
+          <span class="legend-cell level-4"></span>
+          <span>More</span>
         </div>
       </div>
     </section>
@@ -408,6 +491,23 @@
   </div>
   <div class="xray-spotlight" id="xraySpotlight"></div>
   <canvas class="dust-canvas" id="dustCanvas"></canvas>
+
+  <!-- Case Study Overlay Modal -->
+  <div class="case-study-overlay" id="caseStudyOverlay">
+    <div class="case-study-close" id="caseStudyClose">
+      <span class="close-label font-mono">CLOSE</span>
+      <span class="close-icon">&times;</span>
+    </div>
+    <div class="case-study-container" id="caseStudyContent">
+      <!-- Loaded dynamically via JS -->
+    </div>
+  </div>
+
+  <!-- Now Playing / Status HUD -->
+  <div class="status-hud" id="statusHud">
+    <span class="status-led"></span>
+    <span class="status-text" id="statusText">Now Learning: ...</span>
+  </div>
 
   <!-- External Libraries -->
   <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
